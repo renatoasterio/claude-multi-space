@@ -6,11 +6,11 @@
 
 Isolated Claude Desktop and Claude Code CLI instances, one per account, on macOS and Windows.
 
-**English** · [Português (Brasil)](README.pt-BR.md)
+**English** · [Português (Brasil)](README.pt-BR.md) · [Español](README.es.md)
 
 [![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-c96442)](LICENSE.md)
 ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-1f1e1d)
-![Languages](https://img.shields.io/badge/UI-English%20%7C%20Portugu%C3%AAs-6a9bcc)
+![Languages](https://img.shields.io/badge/UI-English%20%7C%20Portugu%C3%AAs%20%7C%20Espa%C3%B1ol-6a9bcc)
 ![Electron](https://img.shields.io/badge/Electron-45-47848f)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 
@@ -78,9 +78,12 @@ You sign in **once per profile**. From then on, each account opens already signe
 - **Desktop Code tab aligned with the CLI**: each profile's Desktop uses that profile's CLI configuration.
 - **Imports your aliases**: existing `~/.claude-*` folders become profiles without signing in again.
 - **Copy command**: generates a `claude-<profile>` function for your `~/.zshrc` or PowerShell `$PROFILE`.
+- **One window per profile**: opening a profile that is already open brings its window to the front instead of starting a second copy (two copies on the same profile could corrupt the session).
+- **Colored icons**: each profile gets its own icon in its color, on the cards, in the menu bar/tray menu and on its shortcut.
+- **Per-profile shortcuts**: an app in Launchpad/Dock (macOS) or a Start menu entry (Windows), with the profile's icon, that opens that profile's Claude Desktop directly.
 - **Live status**: shows whether each profile's Desktop is open, configured or waiting for sign-in.
 - **Menu bar / system tray icon** with shortcuts to open any profile.
-- **English and Portuguese (Brazil)**, selectable inside the app. The first launch follows your system language.
+- **English, Portuguese (Brazil) and Spanish**, selectable inside the app. The first launch follows your system language.
 - **macOS and Windows**, with automatic light and dark themes.
 - **Privacy**: the app never reads, copies or sends credentials. You sign in inside Claude itself.
 
@@ -217,13 +220,14 @@ click **Import from CLI**. The app finds your existing `~/.claude-*` folders and
 
 ### Profile actions
 
-| Action           | What it does                                                                                                                      |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Open Desktop** | Opens the profile's Claude Desktop instance. If it is already open, Claude brings its window to the front.                        |
-| **Open CLI**     | Opens a terminal in the profile's working folder running `claude`. When you exit `claude`, the terminal keeps the profile active. |
-| **Copy command** | Copies a shell function to use the profile in any terminal (see below).                                                           |
-| **Edit**         | Changes name, color, email and working folder. Sign-in data is not affected.                                                      |
-| **Delete**       | Removes the profile, and optionally its session and data.                                                                         |
+| Action              | What it does                                                                                                                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Open Desktop**    | Opens the profile's Claude Desktop instance. If it is already open, the button reads **Show Desktop** and brings the existing window to the front: there is never more than one window per profile. |
+| **Open CLI**        | Opens a terminal in the profile's working folder running `claude`. When you exit `claude`, the terminal keeps the profile active.                                                                   |
+| **Create shortcut** | Creates an app shortcut with the profile's icon and color (see below). Once it exists, the button reads **Update shortcut**.                                                                        |
+| **Copy command**    | Copies a shell function to use the profile in any terminal (see below).                                                                                                                             |
+| **Edit**            | Changes name, color, email and working folder. Sign-in data is not affected.                                                                                                                        |
+| **Delete**          | Removes the profile, and optionally its session and data.                                                                                                                                           |
 
 ### Profile status
 
@@ -245,11 +249,22 @@ Paste it into your `~/.zshrc`, open a new terminal and run `claude-work` from an
 
 ### Language
 
-Use the language selector at the top of the window to switch between **English** and **Português (Brasil)**. The choice applies right away to the window, the menu bar/tray menu and error messages, and is remembered for next time. On first launch, the app follows your system language.
+Use the language selector at the top of the window to switch between **English**, **Português (Brasil)** and **Español**. The choice applies right away to the window, the menu bar/tray menu and error messages, and is remembered for next time. On first launch, the app follows your system language.
+
+### Shortcuts with the profile's color
+
+**Create shortcut** generates a small app with the profile's icon and color that opens that profile's Claude Desktop directly, without opening Claude MultiSpace's window first:
+
+- **macOS**: the shortcut is created in `~/Applications/Claude MultiSpace` and shown in Finder. It also appears in Launchpad and Spotlight; drag it to your Dock to keep it at hand.
+- **Windows**: the shortcut is created in the Start menu, under **Claude MultiSpace**. Right-click it to pin it to the taskbar or Start.
+
+Shortcuts follow the same one-window rule: if that profile is already open, its window is brought to the front. Renaming a profile or changing its color updates the shortcut, and deleting the profile removes it.
+
+> The icon shown in the Dock or taskbar **while Claude Desktop is running** belongs to Anthropic's app and can't be changed by other programs. The profile color appears on the shortcut you click to open it, in the app and in the menu bar/tray.
 
 ### Menu bar and system tray
 
-The Claude MultiSpace icon in the menu bar (macOS) or system tray (Windows) lists every profile, with shortcuts to open its Desktop or CLI. Profiles with an open Desktop are marked with `●`.
+The Claude MultiSpace icon in the menu bar (macOS) or system tray (Windows) lists every profile with its colored icon and shortcuts to open its Desktop or CLI. Profiles with an open Desktop are marked with `●`.
 
 Closing the main window only hides it. To quit the app, use **Quit** in the icon menu or `⌘Q`.
 
@@ -268,6 +283,8 @@ Everything stays on your machine, in folders only your user can access (`0700` p
 ~/.claude-multispace/
 ├── profiles.json            # profile names, colors and paths (no credentials)
 ├── settings.json            # app preferences (language)
+├── shortcuts.json           # where each profile's shortcut was created
+├── icons/                   # shortcut icons (Windows)
 ├── scripts/                 # scripts used to open the CLI in a terminal
 └── profiles/
     └── <profile-id>/
@@ -312,6 +329,12 @@ Yes, that's the recommended setup. Each profile's Desktop receives that profile'
 </details>
 
 <details>
+<summary><strong>Can I open the same profile twice?</strong></summary>
+
+No, on purpose. Claude Desktop doesn't protect itself against two copies using the same profile folder, which could corrupt the session. Claude MultiSpace checks the running processes and, if the profile is already open, brings its window to the front instead, whether you click the button, the tray menu or a shortcut.
+</details>
+
+<details>
 <summary><strong>Does Claude Desktop keep getting updates?</strong></summary>
 
 Yes. Every instance runs the same installed Claude. When it updates, every profile uses the new version.
@@ -323,7 +346,7 @@ Yes. Every instance runs the same installed Claude. When it updates, every profi
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | "Claude Desktop was not found"                                 | Claude isn't in the default location. On macOS, move it to `/Applications`. On Windows, install it with the installer from [claude.ai/download](https://claude.ai/download) (the Microsoft Store version isn't supported yet). |
 | "Claude Code CLI was not found"                                | Install the CLI with `curl -fsSL https://claude.ai/install.sh \| bash` and reopen the app.                                                                                                                                     |
-| **Open Desktop** only brings a window to the front             | That profile's instance was already open. This is expected.                                                                                                                                                                    |
+| **Show Desktop** only brings a window to the front             | That profile is already open, and only one window per profile is allowed. This is expected.                                                                                                                                    |
 | Status doesn't update                                          | Status refreshes when you return to the app window. Click it to force a refresh.                                                                                                                                               |
 | "Close this profile's Claude Desktop before deleting its data" | Close that profile's Claude window and delete again.                                                                                                                                                                           |
 | macOS says the app "can't be opened"                           | Right-click the app, choose **Open** and confirm (the installer isn't signed yet).                                                                                                                                             |
@@ -375,6 +398,10 @@ tests/
 ├── unit/                # domain, use cases (with fakes), mappers, utils and i18n
 └── integration/         # repositories and workspace on the real file system
 ```
+
+### Testing shortcuts in development
+
+On macOS, shortcuts open `claude-multispace://` links, which the system only routes to the packaged app (the scheme is declared in its `Info.plist`). To test them, build with `npm run dist:mac` and run the app from `dist/`.
 
 ### Adding a language
 

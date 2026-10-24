@@ -6,11 +6,11 @@
 
 Claude Desktop e Claude Code CLI em instâncias isoladas, uma para cada conta, no macOS e no Windows.
 
-[English](README.md) · **Português (Brasil)**
+[English](README.md) · **Português (Brasil)** · [Español](README.es.md)
 
 [![Licença: PolyForm Noncommercial](https://img.shields.io/badge/licen%C3%A7a-PolyForm%20Noncommercial%201.0.0-c96442)](LICENSE.md)
 ![Plataformas](https://img.shields.io/badge/plataformas-macOS%20%7C%20Windows-1f1e1d)
-![Idiomas](https://img.shields.io/badge/interface-English%20%7C%20Portugu%C3%AAs-6a9bcc)
+![Idiomas](https://img.shields.io/badge/interface-English%20%7C%20Portugu%C3%AAs%20%7C%20Espa%C3%B1ol-6a9bcc)
 ![Electron](https://img.shields.io/badge/Electron-45-47848f)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 
@@ -78,9 +78,12 @@ Você faz login **uma única vez por perfil**. A partir daí, cada conta abre j�
 - **Aba Code do Desktop alinhada ao CLI**: o Desktop de cada perfil usa a mesma configuração do CLI daquele perfil.
 - **Importação dos seus aliases**: diretórios `~/.claude-*` que já existem viram perfis sem precisar logar de novo.
 - **Copiar comando**: gera uma função `claude-<perfil>` para o seu `~/.zshrc` ou `$PROFILE` do PowerShell.
+- **Uma janela por perfil**: abrir um perfil que já está aberto traz a janela dele para a frente, em vez de iniciar uma segunda cópia (duas cópias no mesmo perfil poderiam corromper a sessão).
+- **Ícones coloridos**: cada perfil tem um ícone próprio na cor dele, nos cards, no menu da barra de menus/bandeja e no atalho.
+- **Atalhos por perfil**: um app no Launchpad/Dock (macOS) ou um item no Menu Iniciar (Windows), com o ícone do perfil, que abre direto o Claude Desktop daquele perfil.
 - **Status em tempo real**: mostra se o Desktop de cada perfil está aberto, configurado ou aguardando login.
 - **Ícone na barra de menus/bandeja** com atalhos para abrir qualquer perfil.
-- **Inglês e português (Brasil)**, com seletor de idioma no app. Na primeira execução, o app segue o idioma do sistema.
+- **Inglês, português (Brasil) e espanhol**, com seletor de idioma no app. Na primeira execução, o app segue o idioma do sistema.
 - **macOS e Windows**, com tema claro e escuro automático.
 - **Privacidade**: o app nunca lê, copia ou transmite credenciais. O login acontece no próprio Claude.
 
@@ -217,13 +220,14 @@ clique em **Importar do CLI**. O app encontra os diretórios `~/.claude-*` exist
 
 ### Ações de cada perfil
 
-| Ação               | O que faz                                                                                                                         |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Abrir Desktop**  | Abre a instância do Claude Desktop do perfil. Se ela já estiver aberta, o próprio Claude traz a janela para frente.               |
-| **Abrir CLI**      | Abre um terminal na pasta de trabalho do perfil executando `claude`. Ao sair do `claude`, o terminal continua com o perfil ativo. |
-| **Copiar comando** | Copia uma função de shell para usar o perfil em qualquer terminal (veja abaixo).                                                  |
-| **Editar**         | Altera nome, cor, email e pasta de trabalho. Os dados de login não são afetados.                                                  |
-| **Excluir**        | Remove o perfil. Opcionalmente apaga também a sessão e os dados dele.                                                             |
+| Ação               | O que faz                                                                                                                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Abrir Desktop**  | Abre a instância do Claude Desktop do perfil. Se ela já estiver aberta, o botão vira **Mostrar Desktop** e traz a janela existente para a frente: nunca há mais de uma janela por perfil. |
+| **Abrir CLI**      | Abre um terminal na pasta de trabalho do perfil executando `claude`. Ao sair do `claude`, o terminal continua com o perfil ativo.                                                         |
+| **Criar atalho**   | Cria um atalho de app com o ícone e a cor do perfil (veja abaixo). Depois de criado, o botão vira **Atualizar atalho**.                                                                   |
+| **Copiar comando** | Copia uma função de shell para usar o perfil em qualquer terminal (veja abaixo).                                                                                                          |
+| **Editar**         | Altera nome, cor, email e pasta de trabalho. Os dados de login não são afetados.                                                                                                          |
+| **Excluir**        | Remove o perfil. Opcionalmente apaga também a sessão e os dados dele.                                                                                                                     |
 
 ### Status dos perfis
 
@@ -245,11 +249,22 @@ Cole no seu `~/.zshrc`, abra um novo terminal e use `claude-trabalho` em qualque
 
 ### Idioma
 
-Use o seletor de idioma no topo da janela para alternar entre **English** e **Português (Brasil)**. A escolha vale na hora para a janela, para o menu da barra de menus/bandeja e para as mensagens de erro, e fica salva para as próximas vezes. Na primeira execução, o app segue o idioma do sistema.
+Use o seletor de idioma no topo da janela para alternar entre **English**, **Português (Brasil)** e **Español**. A escolha vale na hora para a janela, para o menu da barra de menus/bandeja e para as mensagens de erro, e fica salva para as próximas vezes. Na primeira execução, o app segue o idioma do sistema.
+
+### Atalhos na cor do perfil
+
+**Criar atalho** gera um pequeno app com o ícone e a cor do perfil que abre direto o Claude Desktop daquele perfil, sem precisar abrir a janela do Claude MultiSpace antes:
+
+- **macOS**: o atalho é criado em `~/Applications/Claude MultiSpace` e mostrado no Finder. Ele também aparece no Launchpad e no Spotlight; arraste-o para o Dock para tê-lo sempre à mão.
+- **Windows**: o atalho é criado no Menu Iniciar, em **Claude MultiSpace**. Clique com o botão direito para fixá-lo na barra de tarefas ou no Iniciar.
+
+Os atalhos seguem a mesma regra de uma janela por perfil: se aquele perfil já estiver aberto, a janela dele vem para a frente. Renomear o perfil ou trocar a cor atualiza o atalho, e excluir o perfil o remove.
+
+> O ícone que aparece no Dock ou na barra de tarefas **enquanto o Claude Desktop está aberto** pertence ao app da Anthropic e não pode ser trocado por outros programas. A cor do perfil aparece no atalho que você clica para abri-lo, no app e na barra de menus/bandeja.
 
 ### Barra de menus e bandeja
 
-O ícone do Claude MultiSpace na barra de menus (macOS) ou na bandeja do sistema (Windows) lista todos os perfis, com atalhos para abrir o Desktop ou o CLI de cada um. Perfis com o Desktop aberto aparecem marcados com `●`.
+O ícone do Claude MultiSpace na barra de menus (macOS) ou na bandeja do sistema (Windows) lista todos os perfis com o ícone colorido de cada um e atalhos para abrir o Desktop ou o CLI. Perfis com o Desktop aberto aparecem marcados com `●`.
 
 Fechar a janela principal apenas a esconde. Para encerrar o app, use **Sair** no menu do ícone ou `⌘Q`.
 
@@ -268,6 +283,8 @@ Tudo fica na sua máquina, em pastas acessíveis apenas pelo seu usuário (permi
 ~/.claude-multispace/
 ├── profiles.json            # nomes, cores e caminhos dos perfis (sem credenciais)
 ├── settings.json            # preferências do app (idioma)
+├── shortcuts.json           # onde o atalho de cada perfil foi criado
+├── icons/                   # ícones dos atalhos (Windows)
 ├── scripts/                 # scripts usados para abrir o CLI no terminal
 └── profiles/
     └── <id-do-perfil>/
@@ -312,6 +329,12 @@ Sim, esse é o uso recomendado. O Desktop de cada perfil recebe o mesmo `CLAUDE_
 </details>
 
 <details>
+<summary><strong>Posso abrir o mesmo perfil duas vezes?</strong></summary>
+
+Não, de propósito. O Claude Desktop não se protege contra duas cópias usando a mesma pasta de perfil, o que poderia corromper a sessão. O Claude MultiSpace confere os processos em execução e, se o perfil já estiver aberto, traz a janela dele para a frente, seja pelo botão, pelo menu da bandeja ou por um atalho.
+</details>
+
+<details>
 <summary><strong>O Claude Desktop continua recebendo atualizações?</strong></summary>
 
 Sim. Todas as instâncias usam o mesmo Claude instalado. Quando ele se atualiza, todos os perfis passam a usar a nova versão.
@@ -323,7 +346,7 @@ Sim. Todas as instâncias usam o mesmo Claude instalado. Quando ele se atualiza,
 | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Aviso "Claude Desktop não encontrado"                          | O Claude não está no local padrão. No macOS, mova-o para `/Applications`. No Windows, instale pelo instalador de [claude.ai/download](https://claude.ai/download) (a versão da Microsoft Store ainda não é suportada). |
 | Aviso "Claude Code CLI não encontrado"                         | Instale o CLI com `curl -fsSL https://claude.ai/install.sh \| bash` e reabra o app.                                                                                                                                    |
-| O botão **Abrir Desktop** só traz uma janela para frente       | A instância daquele perfil já estava aberta. É o comportamento esperado.                                                                                                                                               |
+| O botão **Mostrar Desktop** só traz uma janela para a frente   | Aquele perfil já está aberto, e só é permitida uma janela por perfil. É o comportamento esperado.                                                                                                                      |
 | O status não atualiza                                          | O status é atualizado quando você volta para a janela do app. Clique nela para forçar a atualização.                                                                                                                   |
 | "Feche o Claude Desktop deste perfil antes de apagar os dados" | Feche a janela do Claude daquele perfil e tente excluir de novo.                                                                                                                                                       |
 | O macOS diz que o app "não pode ser aberto"                    | Clique com o botão direito no app, escolha **Abrir** e confirme (o instalador ainda não é assinado).                                                                                                                   |
@@ -375,6 +398,10 @@ tests/
 ├── unit/                # domínio, casos de uso (com fakes), mappers, utils e i18n
 └── integration/         # repositório e workspace usando o sistema de arquivos real
 ```
+
+### Testando atalhos em desenvolvimento
+
+No macOS, os atalhos abrem links `claude-multispace://`, que o sistema só entrega ao app empacotado (o esquema é declarado no `Info.plist` dele). Para testá-los, gere com `npm run dist:mac` e rode o app de `dist/`.
 
 ### Adicionando um idioma
 
