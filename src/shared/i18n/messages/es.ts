@@ -1,0 +1,111 @@
+import type { Messages } from './en'
+
+export const es: Messages = {
+  'app.tagline': 'Un Claude por cuenta — lado a lado, sin cerrar sesión.',
+  'app.language': 'Idioma',
+  'app.loading': 'Cargando…',
+
+  'profiles.import': 'Importar desde la CLI',
+  'profiles.new': 'Nuevo perfil',
+  'profiles.empty.title': 'Aún no hay perfiles',
+  'profiles.empty.body':
+    'Crea un perfil para cada cuenta de Claude. Cada perfil abre su propio Claude Desktop y su propia CLI aislados, donde inicias sesión una sola vez.',
+  'profiles.empty.cta': 'Crear el primer perfil',
+
+  'card.noEmail': 'Sin correo de referencia',
+  'card.cli': 'CLI',
+  'card.folder': 'Carpeta',
+  'card.imported': 'importado',
+  'card.openDesktop': 'Abrir Desktop',
+  'card.showDesktop': 'Mostrar Desktop',
+  'card.openCli': 'Abrir CLI',
+  'card.copyCommand': 'Copiar comando',
+  'card.copyCommandHint': 'Copia una función de shell para usar este perfil fuera de la app',
+  'card.edit': 'Editar',
+  'card.delete': 'Eliminar',
+  'card.createShortcut': 'Crear acceso directo',
+  'card.updateShortcut': 'Actualizar acceso directo',
+  'card.shortcutHint':
+    'Crea un acceso directo con el color de este perfil que abre su Claude Desktop',
+  'status.running': 'Desktop abierto',
+  'status.configured': 'Configurado',
+  'status.new': 'Esperando inicio de sesión',
+
+  'form.titleNew': 'Nuevo perfil',
+  'form.titleEdit': 'Editar perfil',
+  'form.name': 'Nombre',
+  'form.namePlaceholder': 'Ej.: Personal, Trabajo, Cliente X',
+  'form.email': 'Correo de la cuenta (referencia)',
+  'form.emailPlaceholder': 'tu@ejemplo.com',
+  'form.emailHint': 'Solo para identificar el perfil. La sesión se inicia dentro de Claude.',
+  'form.workingDir': 'Carpeta de trabajo predeterminada de la CLI',
+  'form.workingDirPlaceholder': 'Opcional — predeterminada: tu carpeta personal',
+  'form.choose': 'Elegir…',
+  'form.color': 'Color',
+  'form.customColor': 'Color personalizado',
+  'form.cancel': 'Cancelar',
+  'form.save': 'Guardar',
+  'form.create': 'Crear perfil',
+  'form.invalidEmail': 'Correo no válido.',
+  'form.invalidFields': 'Revisa el nombre y el color.',
+
+  'import.title': 'Importar perfiles de la CLI',
+  'import.body':
+    'Las carpetas {pattern} existentes (por ejemplo, de tus alias de shell) se convierten en perfiles sin volver a iniciar sesión en la CLI. La app nunca las elimina.',
+  'import.searching': 'Buscando…',
+  'import.none': 'No se encontraron carpetas nuevas.',
+  'import.submit': 'Importar {count}',
+
+  'delete.title': '¿Eliminar "{name}"?',
+  'delete.removeData': 'Eliminar también la sesión y los datos de este perfil',
+  'delete.keepsImported': 'La carpeta importada {path} se conserva.',
+  'delete.confirm': 'Eliminar',
+
+  'env.unsupported': 'Este sistema operativo no es compatible — usa macOS o Windows.',
+  'env.noDesktop': 'No se encontró Claude Desktop (instálalo desde claude.ai/download).',
+  'env.noCli': 'No se encontró Claude Code CLI en tu PATH.',
+
+  'toast.openingDesktop': 'Abriendo Claude Desktop · {name}',
+  'toast.focusedDesktop': '{name} ya está abierto — trayendo su ventana al frente.',
+  'toast.openingCli': 'Abriendo terminal · {name}',
+  'toast.copiedPosix': 'Función copiada — pégala en tu ~/.zshrc',
+  'toast.copiedPowerShell': 'Función copiada — pégala en tu $PROFILE',
+  'toast.created': 'Perfil "{name}" creado. Haz clic en "Abrir Desktop" para iniciar sesión.',
+  'toast.imported': '{count} perfil(es) importado(s).',
+  'toast.deleted': 'Perfil "{name}" eliminado.',
+  'toast.shortcutMac':
+    'Acceso directo creado en ~/Applications/Claude MultiSpace — arrástralo al Dock.',
+  'toast.shortcutWin':
+    'Acceso directo creado en el menú Inicio, en Claude MultiSpace — ánclalo a la barra de tareas.',
+
+  'credits.createdBy': 'Creado por',
+  'credits.license': 'Uso personal y no comercial ({license})',
+
+  'tray.openDesktop': 'Abrir Claude Desktop',
+  'tray.openCli': 'Abrir Claude Code (terminal)',
+  'tray.noProfiles': 'Aún no hay perfiles',
+  'tray.manage': 'Gestionar perfiles…',
+  'tray.about': 'Acerca de {app}',
+  'tray.quit': 'Salir',
+
+  'errors.unexpected': 'Error inesperado. Revisa los registros de la app.',
+  'errors.invalidData': 'Datos no válidos.',
+  'errors.invalidProfileId': 'Identificador de perfil no válido.',
+  'errors.invalidName': 'El nombre debe tener entre {min} y {max} caracteres.',
+  'errors.invalidColor': 'El color debe usar el formato #RRGGBB.',
+  'errors.profileNotFound': 'Perfil no encontrado.',
+  'errors.nameTaken': 'Ya existe un perfil llamado "{name}".',
+  'errors.closeDesktopFirst':
+    'Cierra el Claude Desktop de este perfil antes de eliminar sus datos.',
+  'errors.importNotAllowed': 'Esta carpeta no se puede importar: {path}',
+  'errors.workingDirMissing': 'La carpeta de trabajo no existe.',
+  'errors.desktopNotInstalled': 'No se encontró Claude Desktop en este equipo.',
+  'errors.cliNotInstalled':
+    'No se encontró Claude Code CLI. Instálalo con: curl -fsSL https://claude.ai/install.sh | bash',
+  'errors.launchDesktopFailed': 'No se pudo abrir Claude Desktop: {reason}',
+  'errors.launchTerminalFailed': 'No se pudo abrir la terminal: {reason}',
+  'errors.unsupportedPlatform': 'Sistema operativo no compatible (usa macOS o Windows).',
+  'errors.outsideManagedArea': 'La carpeta está fuera del área gestionada por la app.',
+  'errors.untrustedSender': 'Origen de IPC no confiable.',
+  'errors.shortcutFailed': 'No se pudo crear el acceso directo: {reason}',
+}

@@ -1,28 +1,29 @@
 import { describe, expect, it, vi } from 'vitest'
 import { ZodError } from 'zod'
 import { ErrorCodes } from '@shared/contracts/errors'
-import { isLocale, resolveLocale } from '@shared/i18n/locales'
+import { isLocale, resolveLocale, SupportedLocales } from '@shared/i18n/locales'
 import { en } from '@shared/i18n/messages/en'
-import { ptBR } from '@shared/i18n/messages/pt-BR'
-import { createTranslator, interpolate } from '@shared/i18n/translate'
+import { createTranslator, interpolate, messagesFor } from '@shared/i18n/translate'
 import { LocaleState } from '@main/application/services/LocaleState'
 import { DomainError } from '@main/domain/errors/DomainError'
 import { toErrorPayload } from '@main/presentation/ipc/toErrorPayload'
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort()
 
-describe('dicionários', () => {
-  it('pt-BR tem exatamente as mesmas chaves do inglês', () => {
-    expect(Object.keys(ptBR).sort()).toEqual(Object.keys(en).sort())
+const translations = SupportedLocales.filter((locale) => locale !== 'en')
+const keys = Object.keys(en) as (keyof typeof en)[]
+
+describe.each(translations)('dicionário %s', (locale) => {
+  const messages = messagesFor(locale)
+
+  it('tem exatamente as mesmas chaves do inglês', () => {
+    expect(Object.keys(messages).sort()).toEqual(Object.keys(en).sort())
   })
 
-  it.each(Object.keys(en) as (keyof typeof en)[])(
-    '%s usa os mesmos placeholders nos dois idiomas',
-    (key) => {
-      expect(placeholders(ptBR[key])).toEqual(placeholders(en[key]))
-      expect(ptBR[key].trim()).not.toBe('')
-    },
-  )
+  it.each(keys)('%s usa os mesmos placeholders do inglês', (key) => {
+    expect(placeholders(messages[key])).toEqual(placeholders(en[key]))
+    expect(messages[key].trim()).not.toBe('')
+  })
 })
 
 describe('translate', () => {
@@ -33,6 +34,7 @@ describe('translate', () => {
   it('traduz por idioma', () => {
     expect(createTranslator('en')('delete.title', { name: 'Work' })).toBe('Delete "Work"?')
     expect(createTranslator('pt-BR')('delete.title', { name: 'Work' })).toBe('Excluir "Work"?')
+    expect(createTranslator('es')('delete.title', { name: 'Work' })).toBe('¿Eliminar "Work"?')
   })
 })
 
@@ -41,13 +43,18 @@ describe('locales', () => {
     expect(resolveLocale('pt-BR')).toBe('pt-BR')
     expect(resolveLocale('pt-PT')).toBe('pt-BR')
     expect(resolveLocale('en-US')).toBe('en')
+    expect(resolveLocale('es')).toBe('es')
+    expect(resolveLocale('es-MX')).toBe('es')
+    expect(resolveLocale('es_AR')).toBe('es')
     expect(resolveLocale('fr')).toBe('en')
+    expect(resolveLocale('estonian-like')).toBe('en')
     expect(resolveLocale(undefined)).toBe('en')
   })
 
   it('valida códigos suportados', () => {
     expect(isLocale('pt-BR')).toBe(true)
-    expect(isLocale('es')).toBe(false)
+    expect(isLocale('es')).toBe(true)
+    expect(isLocale('fr')).toBe(false)
     expect(isLocale(1)).toBe(false)
   })
 })
