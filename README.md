@@ -143,7 +143,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ### Option 2: from source
 
-Requires [Node.js](https://nodejs.org) 20.19 or later (Node 24 is recommended for building installers).
+Running the app from source requires [Node.js](https://nodejs.org) 20.19 or later. **Building installers requires Node.js 22.12 or later**: the repository includes an `.nvmrc`, so with [nvm](https://github.com/nvm-sh/nvm) just run `nvm use` first.
 
 ```bash
 git clone https://github.com/renatoasterio/claude-multispace.git
@@ -161,7 +161,11 @@ npm install
 npm run dev
 ```
 
-To build your own installer:
+To build your own installer (Node.js 22.12+):
+
+```bash
+nvm use
+```
 
 ```bash
 npm run dist:mac

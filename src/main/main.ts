@@ -9,6 +9,14 @@ import { ProfileMapper } from './mappers/ProfileMapper'
 import { registerHandlers } from './presentation/ipc/registerHandlers'
 import { AppTray } from './presentation/tray/AppTray'
 import { MainWindow } from './presentation/window/MainWindow'
+import {
+  handleRendererProtocol,
+  registerRendererScheme,
+  RendererOrigin,
+} from './presentation/protocol/rendererProtocol'
+
+// Esquemas privilegiados precisam ser registrados antes do app ficar pronto.
+registerRendererScheme()
 
 if (!app.requestSingleInstanceLock()) {
   app.quit()
@@ -29,7 +37,7 @@ function bootstrap(): void {
   const mainWindow = new MainWindow({
     preloadPath: path.join(__dirname, '../preload/index.js'),
     devServerUrl: app.isPackaged ? undefined : process.env.ELECTRON_RENDERER_URL,
-    rendererHtml: path.join(__dirname, '../renderer/index.html'),
+    rendererUrl: `${RendererOrigin}/index.html`,
     hideOnClose: () => !quitting,
   })
 
@@ -75,6 +83,7 @@ function bootstrap(): void {
   const unsubscribeRegistry = container.registry.onChange(notifyProfilesChanged)
   const unsubscribeLocale = locale.onChange(applyLocale)
   let unregisterHandlers: (() => void) | null = null
+  let unhandleProtocol: (() => void) | null = null
 
   app.on('second-instance', () => mainWindow.show())
   app.on('activate', () => mainWindow.show())
@@ -86,6 +95,7 @@ function bootstrap(): void {
   })
   app.on('will-quit', () => {
     unregisterHandlers?.()
+    unhandleProtocol?.()
     unsubscribeRegistry()
     unsubscribeLocale()
     container.dispose()
@@ -102,6 +112,7 @@ function bootstrap(): void {
     locale.set((await container.settings.get()).language)
     applyLocale()
     session.defaultSession.setPermissionCheckHandler(() => false)
+    unhandleProtocol = handleRendererProtocol(path.join(__dirname, '../renderer'))
     unregisterHandlers = registerHandlers({
       ipcMain,
       container,

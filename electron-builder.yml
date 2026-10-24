@@ -24,8 +24,11 @@ mac:
   target:
     - target: dmg
       arch: [universal]
-  # Sem assinatura por padrão; defina CSC_LINK/CSC_KEY_PASSWORD para assinar.
-  identity: null
+  # Assinatura ad-hoc ("-"): sem certificado, mas obrigatória para rodar no Apple Silicon
+  # (os fuses alteram o binário e invalidam a assinatura original do Electron).
+  # Para assinar com Developer ID, troque por CSC_LINK/CSC_KEY_PASSWORD e reative o hardened runtime.
+  identity: '-'
+  hardenedRuntime: false
   extendInfo:
     LSUIElement: false
 win:

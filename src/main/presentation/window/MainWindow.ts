@@ -1,11 +1,11 @@
 import { BrowserWindow, shell, type IpcMainInvokeEvent } from 'electron'
-import path from 'node:path'
 
 export interface MainWindowOptions {
   preloadPath: string
   /** URL do dev server (electron-vite) ou undefined em produção. */
   devServerUrl: string | undefined
-  rendererHtml: string
+  /** URL da interface empacotada (app://bundle/index.html). */
+  rendererUrl: string
   /** Quando true, fechar a janela apenas a esconde (app continua na tray). */
   hideOnClose: () => boolean
 }
@@ -16,7 +16,7 @@ export class MainWindow {
   private readonly trustedOrigin: string
 
   constructor(private readonly options: MainWindowOptions) {
-    this.trustedOrigin = options.devServerUrl ? new URL(options.devServerUrl).origin : 'file://'
+    this.trustedOrigin = originOf(options.devServerUrl ?? options.rendererUrl) ?? ''
   }
 
   get(): BrowserWindow | null {
@@ -46,17 +46,7 @@ export class MainWindow {
   }
 
   private isTrustedUrl(url: string): boolean {
-    if (this.trustedOrigin === 'file://') {
-      return (
-        url.startsWith('file://') &&
-        path.resolve(fileUrlPath(url)) === path.resolve(this.options.rendererHtml)
-      )
-    }
-    try {
-      return new URL(url).origin === this.trustedOrigin
-    } catch {
-      return false
-    }
+    return this.trustedOrigin !== '' && originOf(url) === this.trustedOrigin
   }
 
   private create(): BrowserWindow {
@@ -102,17 +92,18 @@ export class MainWindow {
       this.window = null
     })
 
-    if (this.options.devServerUrl) void window.loadURL(this.options.devServerUrl)
-    else void window.loadFile(this.options.rendererHtml)
+    void window.loadURL(this.options.devServerUrl ?? this.options.rendererUrl)
 
     return window
   }
 }
 
-function fileUrlPath(url: string): string {
+/** "esquema://host" — URL.origin é "null" para esquemas próprios como app://. */
+export function originOf(url: string): string | null {
   try {
-    return decodeURIComponent(new URL(url).pathname.replace(/^\/([a-zA-Z]:)/, '$1'))
+    const parsed = new URL(url)
+    return parsed.host ? `${parsed.protocol}//${parsed.host}` : null
   } catch {
-    return ''
+    return null
   }
 }

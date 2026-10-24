@@ -143,7 +143,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ### Opção 2: a partir do código-fonte
 
-Requer [Node.js](https://nodejs.org) 20.19 ou superior (o Node 24 é recomendado para gerar instaladores).
+Rodar o app pelo código-fonte requer [Node.js](https://nodejs.org) 20.19 ou superior. **Gerar os instaladores requer Node.js 22.12 ou superior**: o repositório inclui um `.nvmrc`, então com o [nvm](https://github.com/nvm-sh/nvm) basta rodar `nvm use` antes.
 
 ```bash
 git clone https://github.com/renatoasterio/claude-multispace.git
@@ -161,7 +161,11 @@ npm install
 npm run dev
 ```
 
-Para gerar o seu próprio instalador:
+Para gerar o seu próprio instalador (Node.js 22.12+):
+
+```bash
+nvm use
+```
 
 ```bash
 npm run dist:mac
