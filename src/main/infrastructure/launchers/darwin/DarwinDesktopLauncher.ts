@@ -5,7 +5,8 @@ import { buildChildEnv } from '../../../utils/childEnv'
 import { spawnDetached } from '../../../utils/spawnSafe'
 import { firstExisting } from '../../fs/findExecutable'
 import { toProcessHandle } from '../../process/childProcessHandle'
-import { darwinCommandLines, ProcessScanner } from '../../process/ProcessScanner'
+import { darwinProcesses, ProcessScanner } from '../../process/ProcessScanner'
+import { execFileText } from '../../../utils/spawnSafe'
 import { launchFailed, notInstalled, type LauncherContext } from '../shared'
 
 export class DarwinDesktopLauncher implements DesktopLauncher {
@@ -13,7 +14,7 @@ export class DarwinDesktopLauncher implements DesktopLauncher {
 
   constructor(
     private readonly ctx: LauncherContext,
-    private readonly scanner = new ProcessScanner(darwinCommandLines),
+    private readonly scanner = new ProcessScanner(darwinProcesses),
   ) {}
 
   resolveExecutable(): Promise<string | null> {
@@ -37,6 +38,7 @@ export class DarwinDesktopLauncher implements DesktopLauncher {
         cwd: this.ctx.home,
         env: buildChildEnv(this.ctx.env, { CLAUDE_CONFIG_DIR: profile.cliConfigDir }),
       })
+      this.scanner.invalidate()
       return toProcessHandle(child)
     } catch (error) {
       throw launchFailed('desktop', error)
@@ -46,4 +48,35 @@ export class DarwinDesktopLauncher implements DesktopLauncher {
   isRunning(profile: Profile): Promise<boolean> {
     return this.scanner.hasUserDataDir(profile.desktopDataDir)
   }
+
+  /**
+   * Ativa a instância pelo PID via NSRunningApplication (JXA). Não usa Apple Events para
+   * outro app, então não exige permissão de Automação/Acessibilidade.
+   */
+  async focus(profile: Profile): Promise<boolean> {
+    const pid = await this.scanner.findMainPid(profile.desktopDataDir)
+    if (!pid) return false
+    try {
+      const out = await execFileText('/usr/bin/osascript', [
+        '-l',
+        'JavaScript',
+        '-e',
+        ACTIVATE_BY_PID,
+        String(pid),
+      ])
+      return out.trim() === 'ok'
+    } catch {
+      return false
+    }
+  }
 }
+
+// NSApplicationActivateAllWindows (1) | NSApplicationActivateIgnoringOtherApps (2)
+const ACTIVATE_BY_PID = `
+ObjC.import('AppKit')
+function run(argv) {
+  const app = $.NSRunningApplication.runningApplicationWithProcessIdentifier(Number(argv[0]))
+  if (!app || app.isNil()) return 'missing'
+  app.unhide
+  return app.activateWithOptions(3) ? 'ok' : 'failed'
+}`

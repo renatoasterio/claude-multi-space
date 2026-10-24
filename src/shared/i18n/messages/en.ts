@@ -19,11 +19,16 @@ export const en = {
   'card.folder': 'Folder',
   'card.imported': 'imported',
   'card.openDesktop': 'Open Desktop',
+  'card.showDesktop': 'Show Desktop',
   'card.openCli': 'Open CLI',
   'card.copyCommand': 'Copy command',
   'card.copyCommandHint': 'Copies a shell function to use this profile outside the app',
   'card.edit': 'Edit',
   'card.delete': 'Delete',
+  'card.createShortcut': 'Create shortcut',
+  'card.updateShortcut': 'Update shortcut',
+  'card.shortcutHint':
+    "Creates an app shortcut with this profile's color that opens its Claude Desktop",
   'status.running': 'Desktop open',
   'status.configured': 'Configured',
   'status.new': 'Waiting for sign-in',
@@ -68,12 +73,17 @@ export const en = {
 
   // Toasts
   'toast.openingDesktop': 'Opening Claude Desktop · {name}',
+  'toast.focusedDesktop': '{name} is already open — bringing its window to the front.',
   'toast.openingCli': 'Opening terminal · {name}',
   'toast.copiedPosix': 'Function copied — paste it into your ~/.zshrc',
   'toast.copiedPowerShell': 'Function copied — paste it into your $PROFILE',
   'toast.created': 'Profile "{name}" created. Click "Open Desktop" to sign in.',
   'toast.imported': '{count} profile(s) imported.',
   'toast.deleted': 'Profile "{name}" deleted.',
+  'toast.shortcutMac':
+    'Shortcut created in ~/Applications/Claude MultiSpace — drag it to your Dock.',
+  'toast.shortcutWin':
+    'Shortcut created in the Start menu, under Claude MultiSpace — pin it to the taskbar.',
 
   // Footer / about
   'credits.createdBy': 'Created by',
@@ -106,6 +116,7 @@ export const en = {
   'errors.unsupportedPlatform': 'Unsupported operating system (use macOS or Windows).',
   'errors.outsideManagedArea': "Folder is outside the app's managed area.",
   'errors.untrustedSender': 'Untrusted IPC sender.',
+  'errors.shortcutFailed': 'Could not create the shortcut: {reason}',
 } as const
 
 export type MessageKey = keyof typeof en

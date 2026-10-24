@@ -12,6 +12,10 @@ export interface AppPaths {
   profilesFile: string
   /** Preferências do app (idioma). */
   settingsFile: string
+  /** Índice id do perfil -> caminho do atalho do sistema. */
+  shortcutsIndexFile: string
+  /** Ícones .ico gerados para os atalhos do Windows. */
+  iconsDir: string
 }
 
 export function resolveAppPaths(home: string): AppPaths {
@@ -23,5 +27,7 @@ export function resolveAppPaths(home: string): AppPaths {
     scriptsDir: path.join(base, 'scripts'),
     profilesFile: path.join(base, 'profiles.json'),
     settingsFile: path.join(base, 'settings.json'),
+    shortcutsIndexFile: path.join(base, 'shortcuts.json'),
+    iconsDir: path.join(base, 'icons'),
   }
 }

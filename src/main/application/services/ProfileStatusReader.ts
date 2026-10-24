@@ -1,12 +1,14 @@
 import type { Profile } from '../../domain/entities/Profile'
 import type { DesktopLauncher } from '../ports/Launchers'
 import type { ProcessRegistry } from '../ports/ProcessRegistry'
+import type { ProfileShortcuts } from '../ports/ProfileShortcuts'
 import type { ProfileWorkspace } from '../ports/ProfileWorkspace'
 
 export interface ProfileStatus {
   desktopRunning: boolean
   desktopInitialized: boolean
   cliInitialized: boolean
+  hasShortcut: boolean
 }
 
 export interface ProfileView {
@@ -19,6 +21,7 @@ export class ProfileStatusReader {
     private readonly workspace: ProfileWorkspace,
     private readonly desktop: DesktopLauncher,
     private readonly registry: ProcessRegistry,
+    private readonly shortcuts: ProfileShortcuts,
   ) {}
 
   async isDesktopRunning(profile: Profile): Promise<boolean> {
@@ -26,12 +29,14 @@ export class ProfileStatusReader {
   }
 
   async read(profile: Profile): Promise<ProfileView> {
-    const [desktopRunning, desktopInitialized, cliInitialized] = await Promise.all([
+    const [desktopRunning, desktopInitialized, cliInitialized, shortcut] = await Promise.all([
       this.isDesktopRunning(profile),
       this.workspace.hasContent(profile.desktopDataDir),
       this.workspace.hasContent(profile.cliConfigDir),
+      this.shortcuts.find(profile),
     ])
-    return { profile, status: { desktopRunning, desktopInitialized, cliInitialized } }
+    const hasShortcut = shortcut !== null
+    return { profile, status: { desktopRunning, desktopInitialized, cliInitialized, hasShortcut } }
   }
 
   readMany(profiles: Profile[]): Promise<ProfileView[]> {

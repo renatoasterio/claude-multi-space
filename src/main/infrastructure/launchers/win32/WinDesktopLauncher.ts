@@ -7,13 +7,14 @@ import { spawnDetached } from '../../../utils/spawnSafe'
 import { compareVersions } from '../../../utils/versions'
 import { firstExisting } from '../../fs/findExecutable'
 import { toProcessHandle } from '../../process/childProcessHandle'
-import { ProcessScanner, win32CommandLines } from '../../process/ProcessScanner'
+import { ProcessScanner, win32Processes } from '../../process/ProcessScanner'
+import { execFileText } from '../../../utils/spawnSafe'
 import { launchFailed, notInstalled, type LauncherContext } from '../shared'
 
 export class WinDesktopLauncher implements DesktopLauncher {
   constructor(
     private readonly ctx: LauncherContext,
-    private readonly scanner = new ProcessScanner(win32CommandLines, {
+    private readonly scanner = new ProcessScanner(win32Processes, {
       ttlMs: 3000,
       caseInsensitive: true,
     }),
@@ -42,6 +43,7 @@ export class WinDesktopLauncher implements DesktopLauncher {
         env: buildChildEnv(this.ctx.env, { CLAUDE_CONFIG_DIR: profile.cliConfigDir }),
         windowsHide: false,
       })
+      this.scanner.invalidate()
       return toProcessHandle(child)
     } catch (error) {
       throw launchFailed('desktop', error)
@@ -50,6 +52,24 @@ export class WinDesktopLauncher implements DesktopLauncher {
 
   isRunning(profile: Profile): Promise<boolean> {
     return this.scanner.hasUserDataDir(profile.desktopDataDir)
+  }
+
+  /** Ativa a janela pelo PID com WScript.Shell.AppActivate (sem dependências nativas). */
+  async focus(profile: Profile): Promise<boolean> {
+    const pid = await this.scanner.findMainPid(profile.desktopDataDir)
+    if (!pid) return false
+    try {
+      const out = await execFileText('powershell.exe', [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        // PID numérico vindo do próprio sistema: nunca há texto do usuário no comando.
+        `(New-Object -ComObject WScript.Shell).AppActivate(${Math.trunc(pid)})`,
+      ])
+      return out.trim().toLowerCase() === 'true'
+    } catch {
+      return false
+    }
   }
 }
 

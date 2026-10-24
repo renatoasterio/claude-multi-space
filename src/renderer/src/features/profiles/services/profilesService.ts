@@ -11,6 +11,7 @@ export const profilesService = {
   remove: (id: string, removeData: boolean) => unwrap(window.api.deleteProfile(id, removeData)),
   launchDesktop: (id: string) => unwrap(window.api.launchDesktop(id)),
   launchCli: (id: string) => unwrap(window.api.launchCli(id)),
+  createShortcut: (id: string) => unwrap(window.api.createShortcut(id)),
   copyCommand: (id: string, shell: ShellKind) => unwrap(window.api.copyCommand(id, shell)),
   importCandidates: () => unwrap(window.api.listImportCandidates()),
   importProfiles: (paths: string[]) => unwrap(window.api.importProfiles(paths)),

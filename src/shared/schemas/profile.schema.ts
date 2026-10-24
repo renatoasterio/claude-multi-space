@@ -40,10 +40,14 @@ export const CopyCommandSchema = z.strictObject({
 export type ProfileInput = z.infer<typeof ProfileInputSchema>
 export type ShellKind = z.infer<typeof ShellKindSchema>
 
+/** 'focused' = o perfil já estava aberto e a janela existente foi trazida para frente. */
+export type DesktopLaunchResult = 'launched' | 'focused'
+
 export interface ProfileStatusDTO {
   desktopRunning: boolean
   desktopInitialized: boolean
   cliInitialized: boolean
+  hasShortcut: boolean
 }
 
 export interface ProfileDTO {
@@ -71,4 +75,5 @@ export interface EnvironmentDTO {
   cliExecutable: string | null
   profilesRoot: string
   homeDir: string
+  shortcutsSupported: boolean
 }

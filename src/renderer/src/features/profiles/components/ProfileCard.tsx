@@ -3,13 +3,14 @@ import type { MessageKey } from '@shared/i18n/translate'
 import type { ProfileDTO, ShellKind } from '@shared/schemas/profile.schema'
 import { Button } from '../../../shared/components/Button'
 import { tildify } from '@shared/utils/tildify'
-import { initials } from '../../../shared/utils/text'
+import { ProfileIcon } from '../../../shared/components/ProfileIcon'
 import { useI18n } from '../../../shared/i18n/I18nProvider'
 
 export interface ProfileCardActions {
   onLaunchDesktop(profile: ProfileDTO): void
   onLaunchCli(profile: ProfileDTO): void
   onCopyCommand(profile: ProfileDTO, shell: ShellKind): void
+  onCreateShortcut(profile: ProfileDTO): void
   onEdit(profile: ProfileDTO): void
   onDelete(profile: ProfileDTO): void
 }
@@ -18,6 +19,7 @@ interface ProfileCardProps extends ProfileCardActions {
   profile: ProfileDTO
   shell: ShellKind
   homeDir: string | undefined
+  shortcutsSupported: boolean
   isBusy: (key: string) => boolean
 }
 
@@ -32,6 +34,7 @@ export const ProfileCard = memo(function ProfileCard({
   profile,
   shell,
   homeDir,
+  shortcutsSupported,
   isBusy,
   ...actions
 }: ProfileCardProps) {
@@ -40,9 +43,7 @@ export const ProfileCard = memo(function ProfileCard({
   return (
     <article className="card" style={{ '--accent': profile.color } as React.CSSProperties}>
       <div className="card-head">
-        <span className="avatar" aria-hidden>
-          {initials(profile.name)}
-        </span>
+        <ProfileIcon color={profile.color} className="avatar" />
         <div className="card-title">
           <h3>{profile.name}</h3>
           <p className="muted">{profile.email ?? t('card.noEmail')}</p>
@@ -72,12 +73,22 @@ export const ProfileCard = memo(function ProfileCard({
           busy={isBusy(`desktop:${profile.id}`)}
           onClick={() => actions.onLaunchDesktop(profile)}
         >
-          {t('card.openDesktop')}
+          {t(profile.status.desktopRunning ? 'card.showDesktop' : 'card.openDesktop')}
         </Button>
         <Button busy={isBusy(`cli:${profile.id}`)} onClick={() => actions.onLaunchCli(profile)}>
           {t('card.openCli')}
         </Button>
         <div className="card-tools">
+          {shortcutsSupported && (
+            <Button
+              variant="ghost"
+              title={t('card.shortcutHint')}
+              busy={isBusy(`shortcut:${profile.id}`)}
+              onClick={() => actions.onCreateShortcut(profile)}
+            >
+              {t(profile.status.hasShortcut ? 'card.updateShortcut' : 'card.createShortcut')}
+            </Button>
+          )}
           <Button
             variant="ghost"
             title={t('card.copyCommandHint')}

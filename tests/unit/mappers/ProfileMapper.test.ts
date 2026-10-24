@@ -17,7 +17,12 @@ describe('ProfileMapper', () => {
   })
 
   it('gera DTO com status e datas ISO', () => {
-    const status = { desktopRunning: true, desktopInitialized: true, cliInitialized: false }
+    const status = {
+      desktopRunning: true,
+      desktopInitialized: true,
+      cliInitialized: false,
+      hasShortcut: true,
+    }
     const dto = ProfileMapper.toDTO({ profile, status })
     expect(dto).toMatchObject({
       name: 'Cliente',

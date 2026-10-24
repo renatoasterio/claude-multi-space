@@ -15,6 +15,9 @@ export class UnsupportedLauncher implements DesktopLauncher, CliLauncher {
   async isRunning(): Promise<boolean> {
     return false
   }
+  async focus(): Promise<boolean> {
+    return false
+  }
   async openTerminal(): Promise<void> {
     throw unsupported()
   }

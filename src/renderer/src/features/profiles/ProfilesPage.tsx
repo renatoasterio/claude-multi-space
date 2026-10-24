@@ -34,10 +34,10 @@ export function ProfilesPage() {
   const suggestedColor = useMemo(() => defaultColorFor(profiles.length), [profiles.length])
 
   const attempt = useCallback(
-    async (key: string, task: () => Promise<unknown>, success?: string) => {
+    async <T,>(key: string, task: () => Promise<T>, success?: string | ((result: T) => string)) => {
       try {
-        await run(key, task)
-        if (success) notify(success)
+        const result = await run(key, task)
+        if (success) notify(typeof success === 'function' ? success(result) : success)
       } catch (e) {
         notify(errorMessage(e), 'error')
       } finally {
@@ -53,7 +53,10 @@ export function ProfilesPage() {
         attempt(
           `desktop:${p.id}`,
           () => profilesService.launchDesktop(p.id),
-          t('toast.openingDesktop', { name: p.name }),
+          (result) =>
+            t(result === 'focused' ? 'toast.focusedDesktop' : 'toast.openingDesktop', {
+              name: p.name,
+            }),
         ),
       onLaunchCli: (p: ProfileDTO) =>
         attempt(
@@ -67,10 +70,16 @@ export function ProfilesPage() {
           () => profilesService.copyCommand(p.id, kind),
           t(kind === 'posix' ? 'toast.copiedPosix' : 'toast.copiedPowerShell'),
         ),
+      onCreateShortcut: (p: ProfileDTO) =>
+        attempt(
+          `shortcut:${p.id}`,
+          () => profilesService.createShortcut(p.id),
+          t(environment?.platform === 'win32' ? 'toast.shortcutWin' : 'toast.shortcutMac'),
+        ),
       onEdit: (p: ProfileDTO) => setForm({ open: true, profile: p }),
       onDelete: (p: ProfileDTO) => setDeleting(p),
     }),
-    [attempt, t],
+    [attempt, t, environment?.platform],
   )
 
   const closeForm = useCallback(() => setForm({ open: false }), [])
@@ -136,6 +145,7 @@ export function ProfilesPage() {
               profile={profile}
               shell={shell}
               homeDir={homeDir}
+              shortcutsSupported={environment?.shortcutsSupported ?? false}
               isBusy={isBusy}
               {...actions}
             />

@@ -11,6 +11,8 @@ export interface DesktopLauncher {
   launch(profile: Profile): Promise<ProcessHandle>
   /** Detecta instância já aberta (inclusive iniciada antes deste app). */
   isRunning(profile: Profile): Promise<boolean>
+  /** Traz para frente a janela da instância aberta. Retorna false se não encontrou o processo. */
+  focus(profile: Profile): Promise<boolean>
 }
 
 export interface CliLauncher {

@@ -1,6 +1,7 @@
 import {
   clipboard,
   dialog,
+  shell,
   type BrowserWindow,
   type IpcMain,
   type IpcMainInvokeEvent,
@@ -84,6 +85,7 @@ export function registerHandlers(deps: HandlerDeps): () => void {
       cliExecutable,
       profilesRoot: paths.profilesRoot,
       homeDir: paths.home,
+      shortcutsSupported: container.shortcuts.supported,
     }
   })
 
@@ -126,9 +128,9 @@ export function registerHandlers(deps: HandlerDeps): () => void {
     }),
   )
 
-  handle(IpcChannels.launchDesktop, async (raw: unknown) => {
-    await useCases.launchDesktop.execute(ProfileIdSchema.parse(raw))
-  })
+  handle(IpcChannels.launchDesktop, (raw: unknown) =>
+    useCases.launchDesktop.execute(ProfileIdSchema.parse(raw)),
+  )
 
   handle(IpcChannels.launchCli, async (raw: unknown) => {
     await useCases.launchCli.execute(ProfileIdSchema.parse(raw))
@@ -140,6 +142,15 @@ export function registerHandlers(deps: HandlerDeps): () => void {
     clipboard.writeText(command)
     return command
   })
+
+  handle(
+    IpcChannels.createShortcut,
+    mutating(async (raw: unknown) => {
+      const file = await useCases.createShortcut.execute(ProfileIdSchema.parse(raw))
+      // Mostra o atalho no Finder/Explorer para o usuário arrastá-lo ao Dock ou fixá-lo.
+      shell.showItemInFolder(file)
+    }),
+  )
 
   handle(IpcChannels.listImportCandidates, () => useCases.listImportCandidates.execute())
 

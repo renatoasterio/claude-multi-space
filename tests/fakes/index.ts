@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events'
 import type { CliLauncher, DesktopLauncher, ProcessHandle } from '@main/application/ports/Launchers'
 import type { ProfileRepository } from '@main/application/ports/ProfileRepository'
+import type { ProfileShortcuts } from '@main/application/ports/ProfileShortcuts'
 import type { ImportCandidate, ProfileWorkspace } from '@main/application/ports/ProfileWorkspace'
 import { ProfileFinder } from '@main/application/services/ProfileFinder'
 import { ProfileStatusReader } from '@main/application/services/ProfileStatusReader'
@@ -72,6 +73,7 @@ export class FakeDesktopLauncher implements DesktopLauncher {
   executable: string | null = '/Applications/Claude.app/Contents/MacOS/Claude'
   running = new Set<string>()
   launched: FakeProcess[] = []
+  focused: string[] = []
   async resolveExecutable() {
     return this.executable
   }
@@ -82,6 +84,10 @@ export class FakeDesktopLauncher implements DesktopLauncher {
   }
   async isRunning(profile: Profile) {
     return this.running.has(profile.id.value)
+  }
+  async focus(profile: Profile) {
+    this.focused.push(profile.id.value)
+    return true
   }
 }
 
@@ -96,6 +102,24 @@ export class FakeCliLauncher implements CliLauncher {
   }
 }
 
+export class FakeShortcuts implements ProfileShortcuts {
+  supported = true
+  readonly created = new Map<string, string>()
+  removed: string[] = []
+  async create(profile: Profile) {
+    const file = `/shortcuts/${profile.name.value}-${profile.color.value}.app`
+    this.created.set(profile.id.value, file)
+    return file
+  }
+  async remove(profile: Profile) {
+    this.removed.push(profile.id.value)
+    this.created.delete(profile.id.value)
+  }
+  async find(profile: Profile) {
+    return this.created.get(profile.id.value) ?? null
+  }
+}
+
 let uuidCounter = 0
 export const nextUuid = () => `00000000-0000-4000-8000-${String(++uuidCounter).padStart(12, '0')}`
 
@@ -105,10 +129,11 @@ export function makeContext() {
   const desktop = new FakeDesktopLauncher()
   const cli = new FakeCliLauncher()
   const registry = new ChildProcessRegistry()
+  const shortcuts = new FakeShortcuts()
   const clock = { now: () => new Date('2026-01-01T00:00:00.000Z') }
   const ids = { next: nextUuid }
   const finder = new ProfileFinder(repository)
-  const status = new ProfileStatusReader(workspace, desktop, registry)
+  const status = new ProfileStatusReader(workspace, desktop, registry, shortcuts)
   const createProfile = new CreateProfile(repository, workspace, finder, status, ids, clock)
   return {
     repository,
@@ -116,6 +141,7 @@ export function makeContext() {
     desktop,
     cli,
     registry,
+    shortcuts,
     clock,
     ids,
     finder,

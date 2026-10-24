@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ErrorCodes } from '@shared/contracts/errors'
+import { CreateShortcut } from '@main/application/use-cases/CreateShortcut'
 import { BuildLaunchCommand } from '@main/application/use-cases/BuildLaunchCommand'
 import { DeleteProfile } from '@main/application/use-cases/DeleteProfile'
 import { ImportProfiles, ListImportCandidates } from '@main/application/use-cases/ImportProfiles'
@@ -21,6 +22,7 @@ describe('CreateProfile / ListProfiles', () => {
       desktopRunning: false,
       desktopInitialized: false,
       cliInitialized: false,
+      hasShortcut: false,
     })
 
     const list = await new ListProfiles(ctx.repository, ctx.status).execute()
@@ -41,7 +43,13 @@ describe('UpdateProfile', () => {
     const ctx = makeContext()
     const a = await ctx.createProfile.execute(input('A'))
     await ctx.createProfile.execute(input('B'))
-    const update = new UpdateProfile(ctx.repository, ctx.finder, ctx.status, ctx.clock)
+    const update = new UpdateProfile(
+      ctx.repository,
+      ctx.finder,
+      ctx.status,
+      ctx.clock,
+      ctx.shortcuts,
+    )
 
     await expect(
       update.execute(a.profile.id.value, { ...input('A'), color: '#000000' }),
@@ -53,7 +61,13 @@ describe('UpdateProfile', () => {
 
   it('retorna NOT_FOUND para id inexistente', async () => {
     const ctx = makeContext()
-    const update = new UpdateProfile(ctx.repository, ctx.finder, ctx.status, ctx.clock)
+    const update = new UpdateProfile(
+      ctx.repository,
+      ctx.finder,
+      ctx.status,
+      ctx.clock,
+      ctx.shortcuts,
+    )
     await expect(
       update.execute('99999999-9999-4999-8999-999999999999', input('X')),
     ).rejects.toMatchObject({
@@ -65,7 +79,13 @@ describe('UpdateProfile', () => {
 describe('DeleteProfile', () => {
   it('apaga dados apenas quando solicitado', async () => {
     const ctx = makeContext()
-    const del = new DeleteProfile(ctx.repository, ctx.workspace, ctx.finder, ctx.status)
+    const del = new DeleteProfile(
+      ctx.repository,
+      ctx.workspace,
+      ctx.finder,
+      ctx.status,
+      ctx.shortcuts,
+    )
     const a = await ctx.createProfile.execute(input('A'))
     const b = await ctx.createProfile.execute(input('B'))
 
@@ -77,7 +97,13 @@ describe('DeleteProfile', () => {
 
   it('recusa apagar dados com o Desktop do perfil aberto', async () => {
     const ctx = makeContext()
-    const del = new DeleteProfile(ctx.repository, ctx.workspace, ctx.finder, ctx.status)
+    const del = new DeleteProfile(
+      ctx.repository,
+      ctx.workspace,
+      ctx.finder,
+      ctx.status,
+      ctx.shortcuts,
+    )
     const a = await ctx.createProfile.execute(input('A'))
     ctx.desktop.running.add(a.profile.id.value)
     await expect(del.execute(a.profile.id.value, true)).rejects.toMatchObject({
@@ -123,6 +149,49 @@ describe('LaunchDesktop / LaunchCli', () => {
   })
 })
 
+describe('LaunchDesktop: uma instância por perfil', () => {
+  it('segundo clique foca a janela existente em vez de abrir outra', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    const launch = new LaunchDesktop(ctx.finder, ctx.desktop, ctx.registry)
+
+    expect(await launch.execute(a.profile.id.value)).toBe('launched')
+    expect(await launch.execute(a.profile.id.value)).toBe('focused')
+    expect(ctx.desktop.launched).toHaveLength(1)
+    expect(ctx.desktop.focused).toEqual([a.profile.id.value])
+  })
+
+  it('instância aberta fora do app também é focada, não duplicada', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    ctx.desktop.running.add(a.profile.id.value)
+    const launch = new LaunchDesktop(ctx.finder, ctx.desktop, ctx.registry)
+
+    expect(await launch.execute(a.profile.id.value)).toBe('focused')
+    expect(ctx.desktop.launched).toHaveLength(0)
+  })
+
+  it('cliques simultâneos abrem uma única instância', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    const launch = new LaunchDesktop(ctx.finder, ctx.desktop, ctx.registry)
+
+    const results = await Promise.all([1, 2, 3].map(() => launch.execute(a.profile.id.value)))
+    expect(results).toEqual(['launched', 'launched', 'launched'])
+    expect(ctx.desktop.launched).toHaveLength(1)
+  })
+
+  it('perfis diferentes abrem instâncias próprias', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    const b = await ctx.createProfile.execute(input('B'))
+    const launch = new LaunchDesktop(ctx.finder, ctx.desktop, ctx.registry)
+
+    await Promise.all([launch.execute(a.profile.id.value), launch.execute(b.profile.id.value)])
+    expect(ctx.desktop.launched).toHaveLength(2)
+  })
+})
+
 describe('BuildLaunchCommand', () => {
   it('usa o executável resolvido e o diretório do perfil', async () => {
     const ctx = makeContext()
@@ -163,5 +232,59 @@ describe('ImportProfiles', () => {
   it('recusa caminhos que não foram descobertos pelo app', async () => {
     const { importer } = setup()
     await expect(importer.execute(['/etc'])).rejects.toMatchObject({ code: ErrorCodes.Validation })
+  })
+})
+
+describe('Atalhos por perfil', () => {
+  it('cria o atalho e o status passa a indicar que existe', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    const file = await new CreateShortcut(ctx.finder, ctx.shortcuts).execute(a.profile.id.value)
+    expect(file).toContain('A-#d97757')
+    expect((await ctx.status.read(a.profile)).status.hasShortcut).toBe(true)
+  })
+
+  it('editar nome/cor recria o atalho existente; sem atalho, nada é criado', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    const b = await ctx.createProfile.execute(input('B'))
+    const update = new UpdateProfile(
+      ctx.repository,
+      ctx.finder,
+      ctx.status,
+      ctx.clock,
+      ctx.shortcuts,
+    )
+    await new CreateShortcut(ctx.finder, ctx.shortcuts).execute(a.profile.id.value)
+
+    await update.execute(a.profile.id.value, { name: 'A2', color: '#6a9bcc' })
+    await update.execute(b.profile.id.value, { name: 'B2', color: '#6a9bcc' })
+    expect(ctx.shortcuts.created.get(a.profile.id.value)).toContain('A2-#6a9bcc')
+    expect(ctx.shortcuts.created.has(b.profile.id.value)).toBe(false)
+  })
+
+  it('excluir o perfil remove o atalho', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    await new CreateShortcut(ctx.finder, ctx.shortcuts).execute(a.profile.id.value)
+    await new DeleteProfile(
+      ctx.repository,
+      ctx.workspace,
+      ctx.finder,
+      ctx.status,
+      ctx.shortcuts,
+    ).execute(a.profile.id.value, false)
+    expect(ctx.shortcuts.removed).toEqual([a.profile.id.value])
+  })
+
+  it('plataforma sem suporte retorna erro claro', async () => {
+    const ctx = makeContext()
+    const a = await ctx.createProfile.execute(input('A'))
+    ctx.shortcuts.supported = false
+    await expect(
+      new CreateShortcut(ctx.finder, ctx.shortcuts).execute(a.profile.id.value),
+    ).rejects.toMatchObject({
+      code: ErrorCodes.UnsupportedPlatform,
+    })
   })
 })

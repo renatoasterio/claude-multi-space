@@ -17,11 +17,15 @@ export const ptBR: Messages = {
   'card.folder': 'Pasta',
   'card.imported': 'importado',
   'card.openDesktop': 'Abrir Desktop',
+  'card.showDesktop': 'Mostrar Desktop',
   'card.openCli': 'Abrir CLI',
   'card.copyCommand': 'Copiar comando',
   'card.copyCommandHint': 'Copia uma função de shell para usar o perfil fora do app',
   'card.edit': 'Editar',
   'card.delete': 'Excluir',
+  'card.createShortcut': 'Criar atalho',
+  'card.updateShortcut': 'Atualizar atalho',
+  'card.shortcutHint': 'Cria um atalho de app na cor deste perfil que abre o Claude Desktop dele',
   'status.running': 'Desktop aberto',
   'status.configured': 'Configurado',
   'status.new': 'Aguardando login',
@@ -61,12 +65,16 @@ export const ptBR: Messages = {
   'env.noCli': 'Claude Code CLI não encontrado no PATH.',
 
   'toast.openingDesktop': 'Abrindo Claude Desktop · {name}',
+  'toast.focusedDesktop': '{name} já está aberto — trazendo a janela para a frente.',
   'toast.openingCli': 'Abrindo terminal · {name}',
   'toast.copiedPosix': 'Função copiada — cole no seu ~/.zshrc',
   'toast.copiedPowerShell': 'Função copiada — cole no seu $PROFILE',
   'toast.created': 'Perfil "{name}" criado. Clique em "Abrir Desktop" para fazer login.',
   'toast.imported': '{count} perfil(is) importado(s).',
   'toast.deleted': 'Perfil "{name}" excluído.',
+  'toast.shortcutMac': 'Atalho criado em ~/Applications/Claude MultiSpace — arraste-o para o Dock.',
+  'toast.shortcutWin':
+    'Atalho criado no Menu Iniciar, em Claude MultiSpace — fixe-o na barra de tarefas.',
 
   'credits.createdBy': 'Criado por',
   'credits.license': 'Uso pessoal e não comercial ({license})',
@@ -96,4 +104,5 @@ export const ptBR: Messages = {
   'errors.unsupportedPlatform': 'Sistema operacional não suportado (use macOS ou Windows).',
   'errors.outsideManagedArea': 'Diretório fora da área gerenciada pelo app.',
   'errors.untrustedSender': 'Origem do IPC não confiável.',
+  'errors.shortcutFailed': 'Não foi possível criar o atalho: {reason}',
 }

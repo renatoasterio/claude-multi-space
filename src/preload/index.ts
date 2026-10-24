@@ -15,6 +15,7 @@ const api: MultiSpaceApi = {
   deleteProfile: (id, removeData) => invoke(IpcChannels.deleteProfile, { id, removeData }),
   launchDesktop: (id) => invoke(IpcChannels.launchDesktop, id),
   launchCli: (id) => invoke(IpcChannels.launchCli, id),
+  createShortcut: (id) => invoke(IpcChannels.createShortcut, id),
   copyCommand: (id, shell) => invoke(IpcChannels.copyCommand, { id, shell }),
   listImportCandidates: () => invoke(IpcChannels.listImportCandidates),
   importProfiles: (paths) => invoke(IpcChannels.importProfiles, { paths }),

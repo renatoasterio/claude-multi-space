@@ -1,20 +1,33 @@
 import { execFileText } from '../../utils/spawnSafe'
 
-/** Fonte das linhas de comando dos processos do Claude Desktop em execução. */
-export type CommandLineSource = () => Promise<string[]>
+export interface ProcessEntry {
+  pid: number
+  command: string
+}
 
-export const darwinCommandLines: CommandLineSource = async () =>
-  (await execFileText('/bin/ps', ['-axww', '-o', 'command='])).split('\n')
+/** Fonte dos processos (PID + linha de comando) do Claude Desktop em execução. */
+export type ProcessSource = () => Promise<ProcessEntry[]>
 
-export const win32CommandLines: CommandLineSource = async () =>
-  (
+/** "  123 /path/bin --flag" -> { pid: 123, command: "/path/bin --flag" } */
+export function parsePidLines(output: string): ProcessEntry[] {
+  return output.split(/\r?\n/).flatMap((line) => {
+    const match = /^\s*(\d+)\s+(.+?)\s*$/.exec(line)
+    return match ? [{ pid: Number(match[1]), command: match[2]! }] : []
+  })
+}
+
+export const darwinProcesses: ProcessSource = async () =>
+  parsePidLines(await execFileText('/bin/ps', ['-axww', '-o', 'pid=,command=']))
+
+export const win32Processes: ProcessSource = async () =>
+  parsePidLines(
     await execFileText('powershell.exe', [
       '-NoProfile',
       '-NonInteractive',
       '-Command',
-      `Get-CimInstance Win32_Process -Filter "Name='claude.exe'" | ForEach-Object { $_.CommandLine }`,
-    ])
-  ).split(/\r?\n/)
+      `Get-CimInstance Win32_Process -Filter "Name='claude.exe'" | ForEach-Object { "$($_.ProcessId) $($_.CommandLine)" }`,
+    ]),
+  )
 
 /**
  * Detecta instâncias pelo argumento --user-data-dir na linha de comando.
@@ -23,10 +36,10 @@ export const win32CommandLines: CommandLineSource = async () =>
  * simultâneas compartilham a mesma consulta, então listar N perfis custa um único `ps`.
  */
 export class ProcessScanner {
-  private cached: { at: number; lines: Promise<string[]> } | null = null
+  private cached: { at: number; entries: Promise<ProcessEntry[]> } | null = null
 
   constructor(
-    private readonly source: CommandLineSource,
+    private readonly source: ProcessSource,
     private readonly options: {
       ttlMs?: number
       caseInsensitive?: boolean
@@ -35,27 +48,44 @@ export class ProcessScanner {
   ) {}
 
   async hasUserDataDir(dir: string): Promise<boolean> {
-    const needle = this.normalize(`--user-data-dir=${dir}`)
-    const lines = await this.lines()
-    return lines.some((line) => {
-      const normalized = this.normalize(line)
-      let index = normalized.indexOf(needle)
-      while (index !== -1) {
-        const next = normalized[index + needle.length]
-        if (next === undefined || next === ' ' || next === '"') return true
-        index = normalized.indexOf(needle, index + 1)
-      }
-      return false
-    })
+    return (await this.matching(dir)).length > 0
   }
 
-  private lines(): Promise<string[]> {
+  /** PID do processo principal (os auxiliares do Chromium têm --type=). */
+  async findMainPid(dir: string): Promise<number | null> {
+    const main = (await this.matching(dir)).find((entry) => !/\s--type=/.test(entry.command))
+    return main?.pid ?? null
+  }
+
+  /** Descarta o cache (ex.: logo após abrir uma instância). */
+  invalidate(): void {
+    this.cached = null
+  }
+
+  private async matching(dir: string): Promise<ProcessEntry[]> {
+    const needle = this.normalize(`--user-data-dir=${dir}`)
+    return (await this.entries()).filter((entry) =>
+      this.hasArgument(this.normalize(entry.command), needle),
+    )
+  }
+
+  private hasArgument(command: string, needle: string): boolean {
+    let index = command.indexOf(needle)
+    while (index !== -1) {
+      const next = command[index + needle.length]
+      if (next === undefined || next === ' ' || next === '"') return true
+      index = command.indexOf(needle, index + 1)
+    }
+    return false
+  }
+
+  private entries(): Promise<ProcessEntry[]> {
     const now = (this.options.now ?? Date.now)()
     const ttl = this.options.ttlMs ?? 1500
-    if (this.cached && now - this.cached.at < ttl) return this.cached.lines
-    const lines = this.source().catch(() => [] as string[])
-    this.cached = { at: now, lines }
-    return lines
+    if (this.cached && now - this.cached.at < ttl) return this.cached.entries
+    const entries = this.source().catch(() => [] as ProcessEntry[])
+    this.cached = { at: now, entries }
+    return entries
   }
 
   private normalize(value: string): string {

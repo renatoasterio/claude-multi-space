@@ -10,6 +10,11 @@ files:
   - package.json
   - LICENSE.md
 asar: true
+# Links dos atalhos por perfil (claude-multispace://desktop/<id>).
+protocols:
+  - name: Claude MultiSpace
+    schemes:
+      - claude-multispace
 electronFuses:
   runAsNode: false
   enableCookieEncryption: true

@@ -1,8 +1,14 @@
-import { app, ipcMain, session } from 'electron'
+import { app, ipcMain, session, shell } from 'electron'
 import { resolveLocale } from '@shared/i18n/locales'
 import os from 'node:os'
 import path from 'node:path'
 import { Credits } from '@shared/contracts/credits'
+import {
+  DeepLinkScheme,
+  findDeepLinkInArgs,
+  parseDeepLink,
+  type DeepLink,
+} from '@shared/contracts/deepLink'
 import { IpcChannels } from '@shared/contracts/ipc'
 import { createContainer } from './container'
 import { ProfileMapper } from './mappers/ProfileMapper'
@@ -31,6 +37,12 @@ function bootstrap(): void {
     platform: process.platform,
     env: process.env,
     systemLocale: () => resolveLocale(app.getPreferredSystemLanguages()[0] ?? app.getLocale()),
+    // Atalhos do Windows reabrem este executável (em desenvolvimento, com o caminho do app).
+    shortcutLauncher: {
+      target: process.execPath,
+      baseArgs: app.isPackaged ? [] : [path.resolve(process.argv[1] ?? '.')],
+    },
+    writeShortcutLink: (file, options) => shell.writeShortcutLink(file, 'create', options),
   })
   const { logger, useCases, locale } = container
 
@@ -54,7 +66,7 @@ function bootstrap(): void {
     void refreshTray()
   }
 
-  const runFromTray = (task: () => Promise<void>) => {
+  const runFromTray = (task: () => Promise<unknown>) => {
     task().catch((error) => logger.error('Ação da tray falhou', { error: String(error) }))
   }
 
@@ -80,13 +92,39 @@ function bootstrap(): void {
     tray.update()
   }
 
+  // Links dos atalhos: abrem (ou trazem para frente) o Claude Desktop do perfil, sem mostrar a
+  // janela de gerenciamento.
+  let startedByLink = Boolean(findDeepLinkInArgs(process.argv))
+  let lastLinkAt = 0
+  const handleDeepLink = (link: DeepLink) => {
+    lastLinkAt = Date.now()
+    useCases.launchDesktop
+      .execute(link.profileId)
+      .catch((error) => logger.warn('Link de atalho ignorado', { error: String(error) }))
+  }
+
   const unsubscribeRegistry = container.registry.onChange(notifyProfilesChanged)
   const unsubscribeLocale = locale.onChange(applyLocale)
   let unregisterHandlers: (() => void) | null = null
   let unhandleProtocol: (() => void) | null = null
 
-  app.on('second-instance', () => mainWindow.show())
-  app.on('activate', () => mainWindow.show())
+  app.on('second-instance', (_event, argv) => {
+    const link = findDeepLinkInArgs(argv)
+    if (link) handleDeepLink(link)
+    else mainWindow.show()
+  })
+  // macOS: links chegam por open-url (inclusive antes do app ficar pronto).
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+    const link = parseDeepLink(url)
+    if (!link) return
+    if (!app.isReady()) startedByLink = true
+    handleDeepLink(link)
+  })
+  app.on('activate', () => {
+    // Abrir um link também "ativa" o app no macOS; nesse caso a janela não deve aparecer.
+    if (Date.now() - lastLinkAt > 1500) mainWindow.show()
+  })
   app.on('before-quit', () => {
     quitting = true
   })
@@ -120,8 +158,11 @@ function bootstrap(): void {
       isTrustedSender: mainWindow.isTrustedSender,
       onProfilesMutated: notifyProfilesChanged,
     })
+    if (app.isPackaged) app.setAsDefaultProtocolClient(DeepLinkScheme)
     tray.create()
     void refreshTray()
-    mainWindow.show()
+    const initialLink = findDeepLinkInArgs(process.argv)
+    if (initialLink) handleDeepLink(initialLink)
+    if (!startedByLink) mainWindow.show()
   })
 }

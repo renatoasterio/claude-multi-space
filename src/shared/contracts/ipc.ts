@@ -5,6 +5,7 @@ import type {
   ProfileDTO,
   ProfileInput,
   ShellKind,
+  DesktopLaunchResult,
 } from '../schemas/profile.schema'
 import type { Locale } from '../i18n/locales'
 
@@ -24,6 +25,7 @@ export const IpcChannels = {
   copyCommand: 'profiles:copy-command',
   listImportCandidates: 'profiles:import-candidates',
   importProfiles: 'profiles:import',
+  createShortcut: 'profiles:create-shortcut',
   profilesChanged: 'profiles:changed',
   getSettings: 'settings:get',
   setLanguage: 'settings:set-language',
@@ -43,8 +45,9 @@ export interface MultiSpaceApi {
   createProfile(input: ProfileInput): Async<ProfileDTO>
   updateProfile(id: string, input: ProfileInput): Async<ProfileDTO>
   deleteProfile(id: string, removeData: boolean): Async<void>
-  launchDesktop(id: string): Async<void>
+  launchDesktop(id: string): Async<DesktopLaunchResult>
   launchCli(id: string): Async<void>
+  createShortcut(id: string): Async<void>
   copyCommand(id: string, shell: ShellKind): Async<string>
   listImportCandidates(): Async<ImportCandidateDTO[]>
   importProfiles(paths: string[]): Async<ProfileDTO[]>
