@@ -49,13 +49,13 @@
     "name": "Renato Asterio",
     "url": "https://github.com/renatoasterio"
   },
-  "homepage": "https://github.com/renatoasterio/claude-multispace#readme",
+  "homepage": "https://github.com/renatoasterio/claude-multi-space#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/renatoasterio/claude-multispace.git"
+    "url": "git+https://github.com/renatoasterio/claude-multi-space.git"
   },
   "bugs": {
-    "url": "https://github.com/renatoasterio/claude-multispace/issues"
+    "url": "https://github.com/renatoasterio/claude-multi-space/issues"
   },
   "keywords": [
     "claude",

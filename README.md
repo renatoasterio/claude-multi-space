@@ -130,7 +130,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ### Option 1: installer
 
-1. Go to the [Releases](https://github.com/renatoasterio/claude-multispace/releases) page.
+1. Go to the [Releases](https://github.com/renatoasterio/claude-multi-space/releases) page.
 2. Download the file for your system:
    - **macOS**: `Claude-MultiSpace-<version>-universal.dmg`
    - **Windows**: `Claude-MultiSpace-Setup-<version>.exe`
@@ -146,11 +146,11 @@ curl -fsSL https://claude.ai/install.sh | bash
 Running the app from source requires [Node.js](https://nodejs.org) 20.19 or later. **Building installers requires Node.js 22.12 or later**: the repository includes an `.nvmrc`, so with [nvm](https://github.com/nvm-sh/nvm) just run `nvm use` first.
 
 ```bash
-git clone https://github.com/renatoasterio/claude-multispace.git
+git clone https://github.com/renatoasterio/claude-multi-space.git
 ```
 
 ```bash
-cd claude-multispace
+cd claude-multi-space
 ```
 
 ```bash
@@ -338,7 +338,7 @@ Yes. Every instance runs the same installed Claude. When it updates, every profi
 - **Safe deletion**: the app only deletes files inside its own folder and refuses to follow symbolic links out of it.
 - **Hardened binary**: the packaged app uses Electron Fuses to disable debugging features and validate code integrity.
 
-Found a vulnerability? Open an [issue](https://github.com/renatoasterio/claude-multispace/issues) without sensitive details and ask for a private channel to report it.
+Found a vulnerability? Open an [issue](https://github.com/renatoasterio/claude-multi-space/issues) without sensitive details and ask for a private channel to report it.
 
 ## For developers
 
