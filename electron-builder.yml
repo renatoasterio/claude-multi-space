@@ -1,0 +1,39 @@
+appId: com.asoft.claude-multispace
+productName: Claude MultiSpace
+copyright: Copyright © 2026 Renato Asterio — PolyForm Noncommercial 1.0.0
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - resources/**
+  - package.json
+  - LICENSE.md
+asar: true
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+  grantFileProtocolExtraPrivileges: false
+mac:
+  artifactName: Claude-MultiSpace-${version}-${arch}.${ext}
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch: [universal]
+  # Sem assinatura por padrão; defina CSC_LINK/CSC_KEY_PASSWORD para assinar.
+  identity: null
+  extendInfo:
+    LSUIElement: false
+win:
+  target:
+    - target: nsis
+      arch: [x64, arm64]
+nsis:
+  artifactName: Claude-MultiSpace-Setup-${version}.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
