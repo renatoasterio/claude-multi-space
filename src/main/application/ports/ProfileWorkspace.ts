@@ -11,6 +11,13 @@ export interface ProvisionOptions {
   importedCliDir?: string
   /** Copia esta pasta de dados do Claude Desktop (ex.: snapshot do Swivel) para o perfil. */
   desktopSourceDir?: string
+  /** Copia este CLAUDE_CONFIG_DIR (ex.: ~/.claude, com histórico da aba Code) para o cli/ do perfil. */
+  cliSourceDir?: string
+  /**
+   * Pasta de dados do Claude Desktop em uso (~/Library/Application Support/Claude): de lá vêm as
+   * pastas de estado da aba Code que o snapshot do Swivel não inclui (índice de sessões etc.).
+   */
+  desktopStateSourceDir?: string
   /** Origem registrada no perfil para evitar importar o mesmo snapshot duas vezes. */
   importedFrom?: string
 }

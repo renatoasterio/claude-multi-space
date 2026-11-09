@@ -207,8 +207,9 @@ Clique em **Abrir CLI**. Um terminal abre na pasta de trabalho do perfil, já ex
 
 Se você troca de conta com o Swivel, clique em **Importar do CLI** e abra a aba **Swivel**. Cada conta salva no Swivel aparece com a cor, o tamanho e a indicação de qual está ativa. Importar copia os dados do Claude Desktop daquela conta (sessão, memória, servidores MCP e configurações) para um perfil próprio aqui, que abre já logado, lado a lado com os outros.
 
-- A cópia é instantânea no macOS (clone APFS) e compartilha espaço em disco com o Swivel até os arquivos divergirem.
-- Nada no Swivel é alterado, e depois os dois apps ficam independentes: o que você fizer em um não aparece no outro. Reimporte quando quiser uma cópia nova.
+- Cada perfil importado também recebe uma cópia do seu histórico do Claude Code (`~/.claude` e `~/.claude.json`: sessões, projetos, plugins e configurações) e da lista de sessões da aba Code que fica na pasta do Claude padrão (`claude-code-sessions`, que o Swivel deixa de fora), então a aba **Code** daquele perfil mostra as mesmas conversas e projetos que você vê hoje. Essa lista é separada por conta, então cada perfil lista só as sessões da própria conta. O Swivel nunca troca essa pasta, então ela guarda o histórico de todas as suas contas; cada perfil importado parte da mesma cópia e depois acumula só as próprias sessões novas. Caches locais da máquina e travas de sessões abertas ficam de fora.
+- A cópia é instantânea no macOS (clone APFS) e compartilha espaço em disco com o Swivel e com o `~/.claude` até os arquivos divergirem.
+- Nada no Swivel nem no `~/.claude` é alterado, e depois os dois apps ficam independentes: o que você fizer em um não aparece no outro. Reimporte quando quiser uma cópia nova.
 - A conta carregada no Claude Desktop padrão não é importada; só os snapshots que o Swivel salvou.
 
 ### Já usa aliases com `CLAUDE_CONFIG_DIR`?
@@ -413,6 +414,10 @@ tests/
 ├── unit/                # domínio, casos de uso (com fakes), mappers, utils e i18n
 └── integration/         # repositório e workspace usando o sistema de arquivos real
 ```
+
+### Rodando a versão de desenvolvimento ao lado do app instalado
+
+A versão de desenvolvimento (`npm run dev`) usa uma pasta `userData` própria, então pode rodar com o Claude MultiSpace instalado aberto. As duas leem os mesmos perfis em `~/.claude-multispace`.
 
 ### Testando atalhos em desenvolvimento
 

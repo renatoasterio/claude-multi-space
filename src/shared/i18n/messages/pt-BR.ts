@@ -57,7 +57,7 @@ export const ptBR: Messages = {
   'import.tabCli': 'Claude Code CLI',
   'import.tabSwivel': 'Swivel',
   'import.swivelBody':
-    'Copia as contas salvas no Swivel (sessão, memória e configurações) para perfis próprios aqui, assim cada uma abre já logada — todas ao mesmo tempo. Nada no Swivel é alterado; depois da importação, os dois apps ficam independentes.',
+    'Copia as contas salvas no Swivel (sessão, memória e configurações) para perfis próprios aqui, assim cada uma abre já logada — todas ao mesmo tempo. Cada perfil também recebe uma cópia do seu histórico do Claude Code (sessões e projetos), então a aba Code fica igual à de hoje. Nada no Swivel nem no ~/.claude é alterado; depois da importação, os dois apps ficam independentes.',
   'import.swivelNone': 'Nenhuma conta salva no Swivel foi encontrada.',
   'import.swivelActive': 'ativa no Swivel',
   'import.swivelImported': 'já importada',

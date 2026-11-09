@@ -26,8 +26,23 @@ export class SwivelFilesSource implements SwivelSource {
 
   constructor(
     private readonly swivelDir: string,
-    private readonly options: { sizeTtlMs?: number; now?: () => number } = {},
+    private readonly options: {
+      sizeTtlMs?: number
+      now?: () => number
+      /** ~/.claude do usuário; ausente nos testes que não o exercitam. */
+      cliConfigDir?: string
+      /** ~/Library/Application Support/Claude do usuário. */
+      desktopDataDir?: string
+    } = {},
   ) {}
+
+  sharedCliConfigDir(): Promise<string | null> {
+    return existingDir(this.options.cliConfigDir)
+  }
+
+  liveDesktopDataDir(): Promise<string | null> {
+    return existingDir(this.options.desktopDataDir)
+  }
 
   async isAvailable(): Promise<boolean> {
     try {
@@ -84,6 +99,15 @@ export class SwivelFilesSource implements SwivelSource {
     } catch {
       return {}
     }
+  }
+}
+
+async function existingDir(dir: string | undefined): Promise<string | null> {
+  if (!dir) return null
+  try {
+    return (await fs.stat(dir)).isDirectory() ? dir : null
+  } catch {
+    return null
   }
 }
 

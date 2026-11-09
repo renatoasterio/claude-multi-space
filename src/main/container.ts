@@ -97,7 +97,13 @@ export function createContainer({
     new NodeDesktopDataCloner(platform),
   )
   // Swivel só existe no macOS; em outros sistemas a pasta não existe e a lista fica vazia.
-  const swivel = new SwivelFilesSource(path.join(home, 'Library', 'Application Support', 'Swivel'))
+  const swivel = new SwivelFilesSource(
+    path.join(home, 'Library', 'Application Support', 'Swivel'),
+    {
+      cliConfigDir: path.join(home, '.claude'),
+      desktopDataDir: path.join(home, 'Library', 'Application Support', 'Claude'),
+    },
+  )
   const registry = new ChildProcessRegistry()
   const launchers = createLaunchers(platform, { home, scriptsDir: paths.scriptsDir, env })
 
@@ -139,6 +145,7 @@ export function createContainer({
       createShortcut: new CreateShortcut(finder, shortcuts),
       listSwivelProfiles,
       importSwivelProfiles: new ImportSwivelProfiles(
+        swivel,
         listSwivelProfiles,
         createProfile,
         finder,

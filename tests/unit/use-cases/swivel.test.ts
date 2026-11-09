@@ -35,7 +35,13 @@ function setup() {
     },
   ]
   const list = new ListSwivelProfiles(source, ctx.repository)
-  const importer = new ImportSwivelProfiles(list, ctx.createProfile, ctx.finder, ctx.repository)
+  const importer = new ImportSwivelProfiles(
+    source,
+    list,
+    ctx.createProfile,
+    ctx.finder,
+    ctx.repository,
+  )
   return { ctx, source, list, importer }
 }
 
@@ -64,9 +70,13 @@ describe('ListSwivelProfiles', () => {
 })
 
 describe('ImportSwivelProfiles', () => {
-  it('copia o snapshot, mantém nome e cor do Swivel e registra a origem', async () => {
-    const { importer } = setup()
+  it('copia o snapshot e o ~/.claude (histórico do Code), mantém nome e cor e registra a origem', async () => {
+    const { ctx, importer } = setup()
     const [view] = await importer.execute(['Pessoal'])
+    expect(ctx.workspace.clonedCli).toEqual([
+      { from: '/Users/u/.claude', to: expect.stringMatching(/\/cli$/) },
+    ])
+    expect(ctx.workspace.desktopStateFrom).toEqual(['/Users/u/Library/Application Support/Claude'])
     expect(view!.profile.name.value).toBe('Pessoal')
     expect(view!.profile.color.value).toBe('#4a8659')
     expect(view!.profile.importedFrom).toBe(`${SNAP}/Pessoal/Claude`)
@@ -80,6 +90,14 @@ describe('ImportSwivelProfiles', () => {
     const [view] = await importer.execute(['SemCor'])
     expect(view!.profile.name.value).toBe('SemCor 2')
     expect(view!.profile.color.value).toMatch(/^#[0-9a-f]{6}$/)
+  })
+
+  it('sem ~/.claude na máquina, importa só o Desktop e o cli/ nasce vazio', async () => {
+    const { ctx, source, importer } = setup()
+    source.cliConfigDir = null
+    await importer.execute(['ALBA'])
+    expect(ctx.workspace.cloned).toHaveLength(1)
+    expect(ctx.workspace.clonedCli).toEqual([])
   })
 
   it('recusa nomes que não vieram do Swivel', async () => {

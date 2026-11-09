@@ -40,6 +40,7 @@ export class ListSwivelProfiles {
  */
 export class ImportSwivelProfiles {
   constructor(
+    private readonly source: SwivelSource,
     private readonly list: ListSwivelProfiles,
     private readonly createProfile: CreateProfile,
     private readonly finder: ProfileFinder,
@@ -55,6 +56,12 @@ export class ImportSwivelProfiles {
       return candidate
     })
 
+    // A aba Code lê sessões e projetos do CLAUDE_CONFIG_DIR; sem copiá-lo o perfil abriria
+    // logado, mas sem nenhuma conversa ou projeto do Code.
+    const cliSourceDir = (await this.source.sharedCliConfigDir()) ?? undefined
+    // O índice que a sidebar da aba Code lista (claude-code-sessions) fica na pasta do Claude
+    // padrão e o Swivel não o copia; sem ele a sidebar fica vazia mesmo com os transcripts.
+    const desktopStateSourceDir = (await this.source.liveDesktopDataDir()) ?? undefined
     const existingCount = (await this.repository.findAll()).length
     const created: ProfileView[] = []
     for (const [index, candidate] of selected.entries()) {
@@ -65,7 +72,12 @@ export class ImportSwivelProfiles {
       created.push(
         await this.createProfile.execute(
           { name, color },
-          { desktopSourceDir: candidate.desktopDataDir, importedFrom: candidate.desktopDataDir },
+          {
+            desktopSourceDir: candidate.desktopDataDir,
+            cliSourceDir,
+            desktopStateSourceDir,
+            importedFrom: candidate.desktopDataDir,
+          },
         ),
       )
     }

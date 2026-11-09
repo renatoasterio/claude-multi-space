@@ -62,7 +62,7 @@ export const en = {
   'import.tabCli': 'Claude Code CLI',
   'import.tabSwivel': 'Swivel',
   'import.swivelBody':
-    'Copies the accounts saved in Swivel (session, memory and settings) into their own profiles here, so each one opens signed in — all at the same time. Nothing in Swivel is changed; after importing, the two apps are independent.',
+    'Copies the accounts saved in Swivel (session, memory and settings) into their own profiles here, so each one opens signed in — all at the same time. Each profile also gets a copy of your Claude Code history (sessions and projects), so the Code tab looks exactly as it does today. Nothing in Swivel or in ~/.claude is changed; after importing, the two apps are independent.',
   'import.swivelNone': 'No accounts saved in Swivel were found.',
   'import.swivelActive': 'active in Swivel',
   'import.swivelImported': 'already imported',

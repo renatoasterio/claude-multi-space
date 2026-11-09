@@ -207,8 +207,9 @@ Click **Open CLI**. A terminal opens in the profile's working folder, already ru
 
 If you switch accounts with Swivel, click **Import from CLI** and open the **Swivel** tab. Each account saved in Swivel is listed with its color, size and whether it is the active one. Importing copies the account's Claude Desktop data (session, memory, MCP servers and settings) into its own profile here, so it opens already signed in, side by side with the others.
 
-- The copy is instant on macOS (APFS clone) and shares disk space with Swivel until the files diverge.
-- Nothing in Swivel is changed, and the two apps are independent afterwards: what you do in one doesn't show up in the other. Import again whenever you want a fresh copy.
+- Each imported profile also gets a copy of your Claude Code history (`~/.claude` and `~/.claude.json`: sessions, projects, plugins and settings) and of the Code tab's session list from the default Claude's data folder (`claude-code-sessions`, which Swivel leaves out), so the **Code** tab in that profile shows the same conversations and projects you see today. That list is kept per account, so each profile only lists its own account's sessions. Swivel never swaps that folder, so it holds the history of all your accounts; every imported profile starts from the same copy and then keeps only its own new sessions. Machine-local caches and live session locks are left out.
+- The copy is instant on macOS (APFS clone) and shares disk space with Swivel and `~/.claude` until the files diverge.
+- Nothing in Swivel or in `~/.claude` is changed, and the two apps are independent afterwards: what you do in one doesn't show up in the other. Import again whenever you want a fresh copy.
 - The account currently loaded in the default Claude Desktop is not imported; only the snapshots Swivel saved.
 
 ### Already using aliases with `CLAUDE_CONFIG_DIR`?
@@ -413,6 +414,10 @@ tests/
 ├── unit/                # domain, use cases (with fakes), mappers, utils and i18n
 └── integration/         # repositories and workspace on the real file system
 ```
+
+### Running the dev build next to the installed app
+
+The development build (`npm run dev`) uses its own `userData` folder, so it can run while the installed Claude MultiSpace is open. Both read the same profiles in `~/.claude-multispace`.
 
 ### Testing shortcuts in development
 

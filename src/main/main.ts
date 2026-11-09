@@ -24,6 +24,10 @@ import {
 // Esquemas privilegiados precisam ser registrados antes do app ficar pronto.
 registerRendererScheme()
 
+// O lock de instância única deriva do userData. Em desenvolvimento ele fica separado do app
+// instalado, senão `npm run dev` só traria a janela do app de produção para a frente.
+if (!app.isPackaged) app.setPath('userData', path.join(app.getPath('userData'), 'dev'))
+
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {

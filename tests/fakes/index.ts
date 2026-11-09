@@ -40,13 +40,20 @@ export class FakeWorkspace implements ProfileWorkspace {
   withContent = new Set<string>()
   /** Pastas de Desktop copiadas, na ordem (origem -> destino). */
   cloned: Array<{ from: string; to: string }> = []
+  /** CLAUDE_CONFIG_DIRs copiados para o cli/ de um perfil. */
+  clonedCli: Array<{ from: string; to: string }> = []
+  /** Pastas do Claude padrão de onde veio o estado da aba Code, por perfil. */
+  desktopStateFrom: string[] = []
   async provision(id: ProfileId, options: ProvisionOptions = {}): Promise<ProfileDirectories> {
     const desktopDataDir = `${this.root}/${id.value}/desktop`
     if (options.desktopSourceDir)
       this.cloned.push({ from: options.desktopSourceDir, to: desktopDataDir })
+    const cliConfigDir = options.importedCliDir ?? `${this.root}/${id.value}/cli`
+    if (options.cliSourceDir) this.clonedCli.push({ from: options.cliSourceDir, to: cliConfigDir })
+    if (options.desktopStateSourceDir) this.desktopStateFrom.push(options.desktopStateSourceDir)
     return {
       desktopDataDir,
-      cliConfigDir: options.importedCliDir ?? `${this.root}/${id.value}/cli`,
+      cliConfigDir,
       imported: Boolean(options.importedCliDir),
       importedFrom: options.importedFrom ?? null,
     }
@@ -68,6 +75,16 @@ export class FakeWorkspace implements ProfileWorkspace {
 export class FakeSwivelSource implements SwivelSource {
   available = true
   profiles: SwivelProfile[] = []
+  /** ~/.claude simulado; null = usuário sem histórico do Code. */
+  cliConfigDir: string | null = '/Users/u/.claude'
+  /** ~/Library/Application Support/Claude simulado. */
+  desktopDataDir: string | null = '/Users/u/Library/Application Support/Claude'
+  async sharedCliConfigDir() {
+    return this.cliConfigDir
+  }
+  async liveDesktopDataDir() {
+    return this.desktopDataDir
+  }
   async isAvailable() {
     return this.available
   }

@@ -10,9 +10,36 @@ import type { Profile, ProfileDirectories } from '../../domain/entities/Profile'
 import { DomainError } from '../../domain/errors/DomainError'
 import type { ProfileId } from '../../domain/value-objects/ProfileId'
 import { isPathInside } from '../../utils/paths'
+import { writeFileAtomic } from './atomicWrite'
 
 const IMPORTABLE_DIR = /^\.claude-([\w.-]{1,40})$/
 const PRIVATE_DIR = 0o700
+
+/**
+ * Ao copiar um CLAUDE_CONFIG_DIR para um perfil, o que é só desta máquina/sessão fica de fora:
+ * caches e telemetria são regenerados; `sessions`/`session-env` apontam para processos do CLI
+ * de origem que estão vivos; `ide` guarda locks de editores abertos.
+ */
+const CLI_SKIP = [
+  'cache',
+  'telemetry',
+  'shell-snapshots',
+  'sessions',
+  'session-env',
+  'ide',
+  'spares',
+  'downloads',
+]
+/** Manifestos de plugins guardam o caminho absoluto do config dir de origem. */
+const CLI_SELF_PATH_FILES = ['plugins/installed_plugins.json', 'plugins/known_marketplaces.json']
+/**
+ * Estado da aba Code que vive na pasta do Claude Desktop em uso e que o Swivel não inclui no
+ * snapshot: o índice de sessões da sidebar (particionado por conta/organização) e as tarefas
+ * agendadas. Binários e caches (claude-code*, vm_bundles, Cache) ficam de fora: o Claude os baixa.
+ */
+const DESKTOP_CODE_STATE_DIRS = ['claude-code-sessions', 'local-agent-mode-sessions']
+/** Chaves de ~/.claude.json presas à conta do Claude padrão; o Desktop do perfil as regrava. */
+const CLI_CONFIG_ACCOUNT_KEYS = ['oauthAccount']
 
 export class NodeProfileWorkspace implements ProfileWorkspace {
   constructor(
@@ -24,7 +51,8 @@ export class NodeProfileWorkspace implements ProfileWorkspace {
   ) {}
 
   async provision(id: ProfileId, options: ProvisionOptions = {}): Promise<ProfileDirectories> {
-    const { importedCliDir, desktopSourceDir, importedFrom } = options
+    const { importedCliDir, desktopSourceDir, cliSourceDir, desktopStateSourceDir, importedFrom } =
+      options
     const base = path.join(this.root, id.value)
     const desktopDataDir = path.join(base, 'desktop')
     const cliConfigDir = importedCliDir ?? path.join(base, 'cli')
@@ -38,7 +66,23 @@ export class NodeProfileWorkspace implements ProfileWorkspace {
     } else {
       await fs.mkdir(desktopDataDir, { recursive: true, mode: PRIVATE_DIR })
     }
-    if (!importedCliDir) await fs.mkdir(cliConfigDir, { recursive: true, mode: PRIVATE_DIR })
+    if (cliSourceDir) {
+      if (!this.cloner)
+        throw DomainError.validation('errors.importNotAllowed', { path: cliSourceDir })
+      await this.cloner.clone(cliSourceDir, cliConfigDir, {
+        skipTopLevel: CLI_SKIP,
+        rewrite: { rules: [{ from: cliSourceDir }], files: CLI_SELF_PATH_FILES },
+      })
+      await this.copyCliConfigFile(cliSourceDir, cliConfigDir)
+    } else if (!importedCliDir) {
+      await fs.mkdir(cliConfigDir, { recursive: true, mode: PRIVATE_DIR })
+    }
+    if (desktopStateSourceDir && this.cloner) {
+      await this.copyDesktopCodeState(desktopStateSourceDir, desktopDataDir, {
+        from: cliSourceDir,
+        to: cliConfigDir,
+      })
+    }
     // mkdir respeita umask; garante 0700 mesmo assim.
     await Promise.all([fs.chmod(base, PRIVATE_DIR), fs.chmod(desktopDataDir, PRIVATE_DIR)])
 
@@ -47,6 +91,42 @@ export class NodeProfileWorkspace implements ProfileWorkspace {
       cliConfigDir,
       imported: Boolean(importedCliDir),
       importedFrom: importedFrom ?? null,
+    }
+  }
+
+  /**
+   * O Claude Code guarda a configuração (projetos confiáveis, onboarding, MCPs) em
+   * `<CLAUDE_CONFIG_DIR>/.claude.json`, mas no diretório padrão o arquivo fica em ~/.claude.json
+   * (irmão da pasta). Copia o mais completo dos dois, sem a conta logada do Claude padrão.
+   */
+  private async copyCliConfigFile(sourceDir: string, targetDir: string): Promise<void> {
+    const candidates = [
+      path.join(sourceDir, '.claude.json'),
+      path.join(path.dirname(sourceDir), `${path.basename(sourceDir)}.json`),
+    ]
+    let best: Record<string, unknown> | null = null
+    for (const file of candidates) {
+      const parsed = await readJson(file)
+      if (parsed && (!best || Object.keys(parsed).length > Object.keys(best).length)) best = parsed
+    }
+    if (!best) return
+    for (const key of CLI_CONFIG_ACCOUNT_KEYS) delete best[key]
+    await writeFileAtomic(path.join(targetDir, '.claude.json'), JSON.stringify(best, null, 2))
+  }
+
+  /** Copia as pastas de estado da aba Code que faltam no desktop do perfil, religando caminhos. */
+  private async copyDesktopCodeState(
+    liveDesktopDir: string,
+    desktopDataDir: string,
+    cli: { from?: string; to: string },
+  ): Promise<void> {
+    const rules = [{ from: liveDesktopDir, to: desktopDataDir }]
+    if (cli.from) rules.push({ from: cli.from, to: cli.to })
+    for (const name of DESKTOP_CODE_STATE_DIRS) {
+      const source = path.join(liveDesktopDir, name)
+      const target = path.join(desktopDataDir, name)
+      if (!(await this.isDirectory(source)) || (await exists(target))) continue
+      await this.cloner!.clone(source, target, { rewrite: { rules, allJson: true } })
     }
   }
 
@@ -114,4 +194,24 @@ function toTitle(value: string): string {
     .filter(Boolean)
     .map((part) => part[0]!.toUpperCase() + part.slice(1))
     .join(' ')
+}
+
+async function exists(target: string): Promise<boolean> {
+  try {
+    await fs.access(target)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function readJson(file: string): Promise<Record<string, unknown> | null> {
+  try {
+    const parsed: unknown = JSON.parse(await fs.readFile(file, 'utf8'))
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : null
+  } catch {
+    return null
+  }
 }

@@ -16,4 +16,14 @@ export interface SwivelProfile {
 export interface SwivelSource {
   isAvailable(): Promise<boolean>
   listProfiles(): Promise<SwivelProfile[]>
+  /**
+   * CLAUDE_CONFIG_DIR que a aba Code usa no Claude padrão (~/.claude). O Swivel não o troca,
+   * então ele acumula o histórico de todas as contas; null quando não existe.
+   */
+  sharedCliConfigDir(): Promise<string | null>
+  /**
+   * Pasta de dados do Claude Desktop em uso (~/Library/Application Support/Claude). O Swivel
+   * não copia dela o índice de sessões da aba Code; null quando não existe.
+   */
+  liveDesktopDataDir(): Promise<string | null>
 }
