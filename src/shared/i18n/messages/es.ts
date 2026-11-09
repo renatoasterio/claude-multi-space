@@ -55,6 +55,14 @@ export const es: Messages = {
   'import.searching': 'Buscando…',
   'import.none': 'No se encontraron carpetas nuevas.',
   'import.submit': 'Importar {count}',
+  'import.tabCli': 'Claude Code CLI',
+  'import.tabSwivel': 'Swivel',
+  'import.swivelBody':
+    'Copia las cuentas guardadas en Swivel (sesión, memoria y ajustes) a perfiles propios aquí, para que cada una se abra con la sesión iniciada — todas al mismo tiempo. Nada cambia en Swivel; tras importar, las dos apps son independientes.',
+  'import.swivelNone': 'No se encontraron cuentas guardadas en Swivel.',
+  'import.swivelActive': 'activa en Swivel',
+  'import.swivelImported': 'ya importada',
+  'import.swivelSize': '{size} en disco — la copia es instantánea y comparte espacio con Swivel.',
 
   'delete.title': '¿Eliminar "{name}"?',
   'delete.removeData': 'Eliminar también la sesión y los datos de este perfil',

@@ -1,7 +1,7 @@
 import { Profile, type ProfileDetails } from '../../domain/entities/Profile'
 import { ProfileId } from '../../domain/value-objects/ProfileId'
 import type { ProfileRepository } from '../ports/ProfileRepository'
-import type { ProfileWorkspace } from '../ports/ProfileWorkspace'
+import type { ProfileWorkspace, ProvisionOptions } from '../ports/ProfileWorkspace'
 import type { Clock, IdGenerator } from '../ports/System'
 import type { ProfileFinder } from '../services/ProfileFinder'
 import type { ProfileStatusReader, ProfileView } from '../services/ProfileStatusReader'
@@ -16,10 +16,10 @@ export class CreateProfile {
     private readonly clock: Clock,
   ) {}
 
-  async execute(details: ProfileDetails, importedCliDir?: string): Promise<ProfileView> {
+  async execute(details: ProfileDetails, options?: ProvisionOptions): Promise<ProfileView> {
     await this.finder.assertNameAvailable(details.name)
     const id = ProfileId.from(this.ids.next())
-    const dirs = await this.workspace.provision(id, importedCliDir)
+    const dirs = await this.workspace.provision(id, options)
     const profile = Profile.create(id, details, dirs, this.clock.now())
     await this.repository.save(profile)
     return this.status.read(profile)

@@ -9,7 +9,7 @@ import { ShortcutIndex } from '@main/infrastructure/shortcuts/ShortcutIndex'
 import { WinShortcuts } from '@main/infrastructure/shortcuts/WinShortcuts'
 import { nextUuid } from '../fakes'
 
-const dirs = { desktopDataDir: '/d', cliConfigDir: '/c', imported: false }
+const dirs = { desktopDataDir: '/d', cliConfigDir: '/c', imported: false, importedFrom: null }
 const makeProfile = (name: string, color = '#d97757') =>
   Profile.create(ProfileId.from(nextUuid()), { name, color }, dirs, new Date())
 

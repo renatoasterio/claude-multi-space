@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import path from 'node:path'
 import { DefaultLocale, type Locale } from '@shared/i18n/locales'
 import type { CliLauncher, DesktopLauncher } from './application/ports/Launchers'
 import type { ProcessRegistry } from './application/ports/ProcessRegistry'
@@ -22,6 +23,12 @@ import { resolveAppPaths, type AppPaths } from './infrastructure/paths/appPaths'
 import { JsonProfileRepository } from './infrastructure/persistence/JsonProfileRepository'
 import { JsonSettingsStore } from './infrastructure/persistence/JsonSettingsStore'
 import { createShortcuts } from './infrastructure/shortcuts/createShortcuts'
+import { NodeDesktopDataCloner } from './infrastructure/fs/NodeDesktopDataCloner'
+import { SwivelFilesSource } from './infrastructure/swivel/SwivelFilesSource'
+import {
+  ImportSwivelProfiles,
+  ListSwivelProfiles,
+} from './application/use-cases/ImportSwivelProfiles'
 import type { WriteShortcutLink } from './infrastructure/shortcuts/WinShortcuts'
 import type { ProfileShortcuts } from './application/ports/ProfileShortcuts'
 import { CreateShortcut } from './application/use-cases/CreateShortcut'
@@ -49,6 +56,8 @@ export interface Container {
     listImportCandidates: ListImportCandidates
     importProfiles: ImportProfiles
     createShortcut: CreateShortcut
+    listSwivelProfiles: ListSwivelProfiles
+    importSwivelProfiles: ImportSwivelProfiles
   }
   dispose(): void
 }
@@ -81,7 +90,14 @@ export function createContainer({
   const ids = { next: () => randomUUID() }
 
   const repository = new JsonProfileRepository(paths.profilesFile, logger)
-  const workspace = new NodeProfileWorkspace(paths.profilesRoot, home, [paths.baseDir])
+  const workspace = new NodeProfileWorkspace(
+    paths.profilesRoot,
+    home,
+    [paths.baseDir],
+    new NodeDesktopDataCloner(platform),
+  )
+  // Swivel só existe no macOS; em outros sistemas a pasta não existe e a lista fica vazia.
+  const swivel = new SwivelFilesSource(path.join(home, 'Library', 'Application Support', 'Swivel'))
   const registry = new ChildProcessRegistry()
   const launchers = createLaunchers(platform, { home, scriptsDir: paths.scriptsDir, env })
 
@@ -99,6 +115,7 @@ export function createContainer({
   const status = new ProfileStatusReader(workspace, launchers.desktop, registry, shortcuts)
   const createProfile = new CreateProfile(repository, workspace, finder, status, ids, clock)
   const listImportCandidates = new ListImportCandidates(repository, workspace)
+  const listSwivelProfiles = new ListSwivelProfiles(swivel, repository)
 
   return {
     paths,
@@ -120,6 +137,13 @@ export function createContainer({
       listImportCandidates,
       importProfiles: new ImportProfiles(listImportCandidates, createProfile, finder, repository),
       createShortcut: new CreateShortcut(finder, shortcuts),
+      listSwivelProfiles,
+      importSwivelProfiles: new ImportSwivelProfiles(
+        listSwivelProfiles,
+        createProfile,
+        finder,
+        repository,
+      ),
     },
     dispose: () => registry.dispose(),
   }

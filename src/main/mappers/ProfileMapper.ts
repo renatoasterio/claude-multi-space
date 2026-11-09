@@ -17,6 +17,7 @@ export const ProfileMapper = {
       desktopDataDir: profile.desktopDataDir,
       cliConfigDir: profile.cliConfigDir,
       imported: profile.imported,
+      importedFrom: profile.importedFrom,
       createdAt: profile.createdAt.toISOString(),
       updatedAt: profile.updatedAt.toISOString(),
     }
@@ -32,6 +33,7 @@ export const ProfileMapper = {
       desktopDataDir: record.desktopDataDir,
       cliConfigDir: record.cliConfigDir,
       imported: record.imported,
+      importedFrom: record.importedFrom,
       createdAt: new Date(record.createdAt),
       updatedAt: new Date(record.updatedAt),
     })

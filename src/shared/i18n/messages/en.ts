@@ -59,6 +59,14 @@ export const en = {
   'import.searching': 'Searching…',
   'import.none': 'No new folders found.',
   'import.submit': 'Import {count}',
+  'import.tabCli': 'Claude Code CLI',
+  'import.tabSwivel': 'Swivel',
+  'import.swivelBody':
+    'Copies the accounts saved in Swivel (session, memory and settings) into their own profiles here, so each one opens signed in — all at the same time. Nothing in Swivel is changed; after importing, the two apps are independent.',
+  'import.swivelNone': 'No accounts saved in Swivel were found.',
+  'import.swivelActive': 'active in Swivel',
+  'import.swivelImported': 'already imported',
+  'import.swivelSize': '{size} on disk — the copy is instant and shares space with Swivel.',
 
   // Delete dialog
   'delete.title': 'Delete "{name}"?',

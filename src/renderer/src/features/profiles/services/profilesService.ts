@@ -15,5 +15,7 @@ export const profilesService = {
   copyCommand: (id: string, shell: ShellKind) => unwrap(window.api.copyCommand(id, shell)),
   importCandidates: () => unwrap(window.api.listImportCandidates()),
   importProfiles: (paths: string[]) => unwrap(window.api.importProfiles(paths)),
+  swivelProfiles: () => unwrap(window.api.listSwivelProfiles()),
+  importSwivelProfiles: (names: string[]) => unwrap(window.api.importSwivelProfiles(names)),
   onChanged: (listener: () => void) => window.api.onProfilesChanged(listener),
 }

@@ -77,6 +77,7 @@ Inicias sesión **una sola vez por perfil**. A partir de ahí, cada cuenta se ab
 - **Claude Code CLI aislado por perfil**: abre una terminal con el `CLAUDE_CONFIG_DIR` correcto.
 - **Pestaña Code del Desktop alineada con la CLI**: el Desktop de cada perfil usa la configuración de la CLI de ese perfil.
 - **Importa tus alias**: las carpetas `~/.claude-*` existentes se convierten en perfiles sin volver a iniciar sesión.
+- **Importa desde Swivel** (macOS): las cuentas guardadas en [Swivel](https://github.com/jspanji/Swivel) se convierten en perfiles aquí, conservando sesión, memoria, ajustes y color — y todas pueden estar abiertas a la vez.
 - **Copiar comando**: genera una función `claude-<perfil>` para tu `~/.zshrc` o tu `$PROFILE` de PowerShell.
 - **Una ventana por perfil**: abrir un perfil que ya está abierto trae su ventana al frente en lugar de iniciar una segunda copia (dos copias en el mismo perfil podrían dañar la sesión).
 - **Iconos de colores**: cada perfil tiene su propio icono en su color, en las tarjetas, en el menú de la barra de menús/bandeja y en su acceso directo.
@@ -202,6 +203,14 @@ Listo: la próxima vez, esa ventana se abrirá con la sesión ya iniciada. Repit
 
 Haz clic en **Abrir CLI**. Se abre una terminal en la carpeta de trabajo del perfil, ya ejecutando `claude`. La primera vez, escribe `/login` y entra con la misma cuenta.
 
+### ¿Ya usas Swivel?
+
+Si cambias de cuenta con Swivel, haz clic en **Importar desde la CLI** y abre la pestaña **Swivel**. Cada cuenta guardada en Swivel aparece con su color, su tamaño y la indicación de cuál está activa. Importar copia los datos de Claude Desktop de esa cuenta (sesión, memoria, servidores MCP y ajustes) a un perfil propio aquí, que se abre con la sesión iniciada, junto a los demás.
+
+- La copia es instantánea en macOS (clon APFS) y comparte espacio en disco con Swivel hasta que los archivos cambien.
+- Nada cambia en Swivel, y después las dos apps son independientes: lo que hagas en una no aparece en la otra. Vuelve a importar cuando quieras una copia nueva.
+- La cuenta cargada en el Claude Desktop predeterminado no se importa; solo las instantáneas que Swivel guardó.
+
 ### ¿Ya usas alias con `CLAUDE_CONFIG_DIR`?
 
 Si tu `~/.zshrc` tiene algo así:
@@ -326,6 +335,12 @@ No. Cada perfil es independiente y empieza con los ajustes predeterminados de Cl
 <summary><strong>¿Puedo usar el mismo perfil en el Desktop y en la CLI?</strong></summary>
 
 Sí, es la configuración recomendada. El Desktop de cada perfil recibe el `CLAUDE_CONFIG_DIR` de ese perfil, así que la pestaña Code del Desktop y la terminal comparten la misma configuración.
+</details>
+
+<details>
+<summary><strong>¿Qué relación tiene con Swivel?</strong></summary>
+
+Swivel cambia la cuenta del único Claude Desktop predeterminado: una cuenta a la vez. Claude MultiSpace ejecuta un Claude Desktop por cuenta, todos al mismo tiempo. Puedes usar ambos: importa tus cuentas de Swivel a perfiles aquí (ver [¿Ya usas Swivel?](#ya-usas-swivel)), conserva Swivel para el Claude predeterminado y vuelve a importar cuando quieras una copia nueva de una cuenta.
 </details>
 
 <details>

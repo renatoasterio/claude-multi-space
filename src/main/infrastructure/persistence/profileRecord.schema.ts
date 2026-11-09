@@ -9,6 +9,8 @@ export const ProfileRecordSchema = z.object({
   desktopDataDir: z.string(),
   cliConfigDir: z.string(),
   imported: z.boolean(),
+  // Opcional para ler arquivos gravados antes do campo existir.
+  importedFrom: z.string().nullable().default(null),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 })

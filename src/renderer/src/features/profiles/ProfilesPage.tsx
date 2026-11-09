@@ -9,7 +9,7 @@ import { LanguageSelect } from '../../shared/i18n/LanguageSelect'
 import { errorMessage } from '../../shared/utils/apiClient'
 import { DeleteDialog } from './components/DeleteDialog'
 import { EnvironmentNotice } from './components/EnvironmentNotice'
-import { ImportDialog } from './components/ImportDialog'
+import { ImportDialog, type ImportSource } from './components/ImportDialog'
 import { ProfileCard } from './components/ProfileCard'
 import { defaultColorFor, ProfileFormDialog } from './components/ProfileFormDialog'
 import { useBusy } from './hooks/useBusy'
@@ -96,8 +96,11 @@ export function ProfilesPage() {
     await reload()
   }
 
-  const importProfiles = async (paths: string[]) => {
-    const created = await profilesService.importProfiles(paths)
+  const importProfiles = async (source: ImportSource, keys: string[]) => {
+    const created =
+      source === 'swivel'
+        ? await profilesService.importSwivelProfiles(keys)
+        : await profilesService.importProfiles(keys)
     notify(t('toast.imported', { count: created.length }))
     await reload()
   }
@@ -163,7 +166,12 @@ export function ProfilesPage() {
         />
       )}
       {importOpen && (
-        <ImportDialog homeDir={homeDir} onClose={closeImport} onImport={importProfiles} />
+        <ImportDialog
+          homeDir={homeDir}
+          swivelAvailable={environment?.swivelAvailable ?? false}
+          onClose={closeImport}
+          onImport={importProfiles}
+        />
       )}
       {deleting && (
         <DeleteDialog

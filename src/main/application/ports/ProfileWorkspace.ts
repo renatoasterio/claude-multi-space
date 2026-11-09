@@ -6,11 +6,20 @@ export interface ImportCandidate {
   suggestedName: string
 }
 
+export interface ProvisionOptions {
+  /** Reaproveita um CLAUDE_CONFIG_DIR existente (ex.: ~/.claude-cliente) em vez de criar um novo. */
+  importedCliDir?: string
+  /** Copia esta pasta de dados do Claude Desktop (ex.: snapshot do Swivel) para o perfil. */
+  desktopSourceDir?: string
+  /** Origem registrada no perfil para evitar importar o mesmo snapshot duas vezes. */
+  importedFrom?: string
+}
+
 /** Gerencia os diretórios isolados de cada perfil no disco. */
 export interface ProfileWorkspace {
   readonly root: string
-  /** Cria (0700) os diretórios gerenciados; `importedCliDir` reaproveita um CLAUDE_CONFIG_DIR existente. */
-  provision(id: ProfileId, importedCliDir?: string): Promise<ProfileDirectories>
+  /** Cria (0700) os diretórios gerenciados, importando ou copiando conforme `options`. */
+  provision(id: ProfileId, options?: ProvisionOptions): Promise<ProfileDirectories>
   /** Remove somente diretórios gerenciados pelo app (dentro de `root`). */
   remove(profile: Profile): Promise<void>
   hasContent(dir: string): Promise<boolean>

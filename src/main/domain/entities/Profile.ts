@@ -16,6 +16,8 @@ export interface ProfileDirectories {
   cliConfigDir: string
   /** true quando cliConfigDir foi importado (ex.: ~/.claude-cliente) e não pertence ao app. */
   imported: boolean
+  /** Pasta de dados do Desktop de onde este perfil foi copiado (ex.: snapshot do Swivel), se houver. */
+  importedFrom: string | null
 }
 
 export interface ProfileProps extends ProfileDirectories {
@@ -77,6 +79,9 @@ export class Profile {
   }
   get imported(): boolean {
     return this.props.imported
+  }
+  get importedFrom(): string | null {
+    return this.props.importedFrom
   }
   get createdAt(): Date {
     return this.props.createdAt

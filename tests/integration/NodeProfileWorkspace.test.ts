@@ -34,7 +34,7 @@ describe('NodeProfileWorkspace', () => {
     writeFileSync(path.join(imported, '.claude.json'), '{}')
 
     const id = ProfileId.from(nextUuid())
-    const dirs = await workspace.provision(id, imported)
+    const dirs = await workspace.provision(id, { importedCliDir: imported })
     await workspace.remove(asProfile(id, dirs))
 
     expect(existsSync(dirs.desktopDataDir)).toBe(false)
@@ -55,6 +55,7 @@ describe('NodeProfileWorkspace', () => {
         desktopDataDir: path.join(root, id.value, 'desktop'),
         cliConfigDir: '/c',
         imported: false,
+        importedFrom: null,
       })
       await expect(workspace.remove(profile)).rejects.toMatchObject({ code: ErrorCodes.Forbidden })
       expect(existsSync(outside)).toBe(true)

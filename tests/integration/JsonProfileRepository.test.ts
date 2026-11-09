@@ -13,7 +13,7 @@ const make = (name: string) =>
   Profile.create(
     ProfileId.from(nextUuid()),
     { name, color: '#000000' },
-    { desktopDataDir: '/d', cliConfigDir: '/c', imported: false },
+    { desktopDataDir: '/d', cliConfigDir: '/c', imported: false, importedFrom: null },
     new Date(),
   )
 

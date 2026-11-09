@@ -343,6 +343,39 @@ input[type='color'] {
   gap: 8px;
   align-items: center;
 }
+.checklist label.is-muted {
+  opacity: 0.6;
+}
+.checklist-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+}
+.checklist-main small {
+  flex-basis: 100%;
+  margin: 0;
+}
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  font: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  padding: 6px 10px;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.tab.is-active {
+  color: var(--text);
+  border-bottom-color: var(--primary);
+}
 
 .footer {
   margin-top: 40px;

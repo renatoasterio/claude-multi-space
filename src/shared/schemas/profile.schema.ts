@@ -30,6 +30,18 @@ export const ImportProfilesSchema = z.strictObject({
   paths: z.array(z.string().min(1).max(C.pathMaxLength)).min(1).max(C.maxImportBatch),
 })
 
+export const ImportSwivelSchema = z.strictObject({
+  names: z
+    .array(
+      z
+        .string()
+        .min(1)
+        .max(C.nameMaxLength + 20),
+    )
+    .min(1)
+    .max(C.maxImportBatch),
+})
+
 export const ShellKindSchema = z.enum(['posix', 'powershell', 'cmd'])
 
 export const CopyCommandSchema = z.strictObject({
@@ -59,6 +71,7 @@ export interface ProfileDTO {
   desktopDataDir: string
   cliConfigDir: string
   imported: boolean
+  importedFrom: string | null
   createdAt: string
   updatedAt: string
   status: ProfileStatusDTO
@@ -69,6 +82,16 @@ export interface ImportCandidateDTO {
   suggestedName: string
 }
 
+/** Perfil salvo pelo Swivel (macOS) que pode ser copiado para cá. */
+export interface SwivelProfileDTO {
+  name: string
+  color: string | null
+  desktopDataDir: string
+  sizeBytes: number
+  active: boolean
+  alreadyImported: boolean
+}
+
 export interface EnvironmentDTO {
   platform: 'darwin' | 'win32' | 'linux'
   desktopExecutable: string | null
@@ -76,4 +99,6 @@ export interface EnvironmentDTO {
   profilesRoot: string
   homeDir: string
   shortcutsSupported: boolean
+  /** true quando o Swivel está instalado e tem perfis salvos. */
+  swivelAvailable: boolean
 }

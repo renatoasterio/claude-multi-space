@@ -2,6 +2,7 @@ import type { ErrorPayload } from './errors'
 import type {
   EnvironmentDTO,
   ImportCandidateDTO,
+  SwivelProfileDTO,
   ProfileDTO,
   ProfileInput,
   ShellKind,
@@ -25,6 +26,8 @@ export const IpcChannels = {
   copyCommand: 'profiles:copy-command',
   listImportCandidates: 'profiles:import-candidates',
   importProfiles: 'profiles:import',
+  listSwivelProfiles: 'profiles:swivel-candidates',
+  importSwivelProfiles: 'profiles:import-swivel',
   createShortcut: 'profiles:create-shortcut',
   profilesChanged: 'profiles:changed',
   getSettings: 'settings:get',
@@ -51,6 +54,8 @@ export interface MultiSpaceApi {
   copyCommand(id: string, shell: ShellKind): Async<string>
   listImportCandidates(): Async<ImportCandidateDTO[]>
   importProfiles(paths: string[]): Async<ProfileDTO[]>
+  listSwivelProfiles(): Async<SwivelProfileDTO[]>
+  importSwivelProfiles(names: string[]): Async<ProfileDTO[]>
   /** Retorna função de unsubscribe — sempre chamar no cleanup. */
   onProfilesChanged(listener: () => void): () => void
 }

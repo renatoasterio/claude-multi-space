@@ -2,7 +2,12 @@ import { EventEmitter } from 'node:events'
 import type { CliLauncher, DesktopLauncher, ProcessHandle } from '@main/application/ports/Launchers'
 import type { ProfileRepository } from '@main/application/ports/ProfileRepository'
 import type { ProfileShortcuts } from '@main/application/ports/ProfileShortcuts'
-import type { ImportCandidate, ProfileWorkspace } from '@main/application/ports/ProfileWorkspace'
+import type {
+  ImportCandidate,
+  ProfileWorkspace,
+  ProvisionOptions,
+} from '@main/application/ports/ProfileWorkspace'
+import type { SwivelProfile, SwivelSource } from '@main/application/ports/SwivelSource'
 import { ProfileFinder } from '@main/application/services/ProfileFinder'
 import { ProfileStatusReader } from '@main/application/services/ProfileStatusReader'
 import { CreateProfile } from '@main/application/use-cases/CreateProfile'
@@ -33,11 +38,17 @@ export class FakeWorkspace implements ProfileWorkspace {
   removed: string[] = []
   candidates: ImportCandidate[] = []
   withContent = new Set<string>()
-  async provision(id: ProfileId, importedCliDir?: string): Promise<ProfileDirectories> {
+  /** Pastas de Desktop copiadas, na ordem (origem -> destino). */
+  cloned: Array<{ from: string; to: string }> = []
+  async provision(id: ProfileId, options: ProvisionOptions = {}): Promise<ProfileDirectories> {
+    const desktopDataDir = `${this.root}/${id.value}/desktop`
+    if (options.desktopSourceDir)
+      this.cloned.push({ from: options.desktopSourceDir, to: desktopDataDir })
     return {
-      desktopDataDir: `${this.root}/${id.value}/desktop`,
-      cliConfigDir: importedCliDir ?? `${this.root}/${id.value}/cli`,
-      imported: Boolean(importedCliDir),
+      desktopDataDir,
+      cliConfigDir: options.importedCliDir ?? `${this.root}/${id.value}/cli`,
+      imported: Boolean(options.importedCliDir),
+      importedFrom: options.importedFrom ?? null,
     }
   }
   async remove(profile: Profile) {
@@ -51,6 +62,17 @@ export class FakeWorkspace implements ProfileWorkspace {
   }
   async isDirectory() {
     return true
+  }
+}
+
+export class FakeSwivelSource implements SwivelSource {
+  available = true
+  profiles: SwivelProfile[] = []
+  async isAvailable() {
+    return this.available
+  }
+  async listProfiles() {
+    return this.available ? this.profiles : []
   }
 }
 

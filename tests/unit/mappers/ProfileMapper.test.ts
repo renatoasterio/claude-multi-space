@@ -7,7 +7,7 @@ describe('ProfileMapper', () => {
   const profile = Profile.create(
     ProfileId.from('22222222-2222-4222-8222-222222222222'),
     { name: 'Cliente', color: '#112233', email: 'x@y.com', workingDir: '/w' },
-    { desktopDataDir: '/d', cliConfigDir: '/c', imported: true },
+    { desktopDataDir: '/d', cliConfigDir: '/c', imported: true, importedFrom: null },
     new Date('2026-03-01T10:00:00.000Z'),
   )
 

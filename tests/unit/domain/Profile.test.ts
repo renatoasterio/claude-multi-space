@@ -5,7 +5,7 @@ import { ProfileId } from '@main/domain/value-objects/ProfileId'
 import { ProfileName } from '@main/domain/value-objects/ProfileName'
 
 const id = ProfileId.from('11111111-1111-4111-8111-111111111111')
-const dirs = { desktopDataDir: '/d', cliConfigDir: '/c', imported: false }
+const dirs = { desktopDataDir: '/d', cliConfigDir: '/c', imported: false, importedFrom: null }
 const t0 = new Date('2026-01-01T00:00:00Z')
 
 describe('Profile', () => {

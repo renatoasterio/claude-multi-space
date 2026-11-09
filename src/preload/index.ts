@@ -19,6 +19,8 @@ const api: MultiSpaceApi = {
   copyCommand: (id, shell) => invoke(IpcChannels.copyCommand, { id, shell }),
   listImportCandidates: () => invoke(IpcChannels.listImportCandidates),
   importProfiles: (paths) => invoke(IpcChannels.importProfiles, { paths }),
+  listSwivelProfiles: () => invoke(IpcChannels.listSwivelProfiles),
+  importSwivelProfiles: (names) => invoke(IpcChannels.importSwivelProfiles, { names }),
   onProfilesChanged: (listener) => {
     const wrapped = () => listener()
     ipcRenderer.on(IpcChannels.profilesChanged, wrapped)

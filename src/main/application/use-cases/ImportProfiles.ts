@@ -44,7 +44,9 @@ export class ImportProfiles {
     for (const [index, candidate] of selected.entries()) {
       const name = await this.finder.uniqueName(candidate.suggestedName)
       const color = ProfileColorPresets[(existingCount + index) % ProfileColorPresets.length]!
-      created.push(await this.createProfile.execute({ name, color }, candidate.path))
+      created.push(
+        await this.createProfile.execute({ name, color }, { importedCliDir: candidate.path }),
+      )
     }
     return created
   }

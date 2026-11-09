@@ -1,6 +1,11 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import type { ImportCandidate, ProfileWorkspace } from '../../application/ports/ProfileWorkspace'
+import type { DesktopDataCloner } from '../../application/ports/DesktopDataCloner'
+import type {
+  ImportCandidate,
+  ProfileWorkspace,
+  ProvisionOptions,
+} from '../../application/ports/ProfileWorkspace'
 import type { Profile, ProfileDirectories } from '../../domain/entities/Profile'
 import { DomainError } from '../../domain/errors/DomainError'
 import type { ProfileId } from '../../domain/value-objects/ProfileId'
@@ -15,20 +20,34 @@ export class NodeProfileWorkspace implements ProfileWorkspace {
     private readonly home: string,
     /** Pastas que nunca são candidatas à importação (a do próprio app casa com ~/.claude-*). */
     private readonly excludedDirs: string[] = [],
+    private readonly cloner?: DesktopDataCloner,
   ) {}
 
-  async provision(id: ProfileId, importedCliDir?: string): Promise<ProfileDirectories> {
+  async provision(id: ProfileId, options: ProvisionOptions = {}): Promise<ProfileDirectories> {
+    const { importedCliDir, desktopSourceDir, importedFrom } = options
     const base = path.join(this.root, id.value)
     const desktopDataDir = path.join(base, 'desktop')
     const cliConfigDir = importedCliDir ?? path.join(base, 'cli')
 
     await fs.mkdir(this.root, { recursive: true, mode: PRIVATE_DIR })
-    await fs.mkdir(desktopDataDir, { recursive: true, mode: PRIVATE_DIR })
+    await fs.mkdir(base, { recursive: true, mode: PRIVATE_DIR })
+    if (desktopSourceDir) {
+      if (!this.cloner)
+        throw DomainError.validation('errors.importNotAllowed', { path: desktopSourceDir })
+      await this.cloner.clone(desktopSourceDir, desktopDataDir)
+    } else {
+      await fs.mkdir(desktopDataDir, { recursive: true, mode: PRIVATE_DIR })
+    }
     if (!importedCliDir) await fs.mkdir(cliConfigDir, { recursive: true, mode: PRIVATE_DIR })
     // mkdir respeita umask; garante 0700 mesmo assim.
     await Promise.all([fs.chmod(base, PRIVATE_DIR), fs.chmod(desktopDataDir, PRIVATE_DIR)])
 
-    return { desktopDataDir, cliConfigDir, imported: Boolean(importedCliDir) }
+    return {
+      desktopDataDir,
+      cliConfigDir,
+      imported: Boolean(importedCliDir),
+      importedFrom: importedFrom ?? null,
+    }
   }
 
   async remove(profile: Profile): Promise<void> {

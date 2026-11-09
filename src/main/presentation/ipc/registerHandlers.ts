@@ -13,6 +13,7 @@ import {
   CopyCommandSchema,
   DeleteProfileSchema,
   ImportProfilesSchema,
+  ImportSwivelSchema,
   ProfileIdSchema,
   ProfileInputSchema,
   UpdateProfileSchema,
@@ -86,6 +87,7 @@ export function registerHandlers(deps: HandlerDeps): () => void {
       profilesRoot: paths.profilesRoot,
       homeDir: paths.home,
       shortcutsSupported: container.shortcuts.supported,
+      swivelAvailable: await useCases.listSwivelProfiles.isAvailable(),
     }
   })
 
@@ -142,6 +144,16 @@ export function registerHandlers(deps: HandlerDeps): () => void {
     clipboard.writeText(command)
     return command
   })
+
+  handle(IpcChannels.listSwivelProfiles, () => useCases.listSwivelProfiles.execute())
+
+  handle(
+    IpcChannels.importSwivelProfiles,
+    mutating(async (raw: unknown) => {
+      const { names } = ImportSwivelSchema.parse(raw)
+      return (await useCases.importSwivelProfiles.execute(names)).map(ProfileMapper.toDTO)
+    }),
+  )
 
   handle(
     IpcChannels.createShortcut,
