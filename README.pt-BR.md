@@ -210,7 +210,7 @@ npm run dist:mac
 npm run dist:win
 ```
 
-O instalador é criado na pasta `dist/`. Gere o instalador do Windows em uma máquina Windows.
+O instalador é criado na pasta `dist/`. O instalador do Windows pode ser gerado no Windows ou também no macOS: veja [Gerando o instalador do Windows no macOS](#gerando-o-instalador-do-windows-no-macos).
 
 ## Primeiros passos
 
@@ -453,6 +453,28 @@ A versão de desenvolvimento (`npm run dev`) usa uma pasta `userData` própria, 
 ### Testando atalhos em desenvolvimento
 
 No macOS, os atalhos abrem links `claude-multispace://`, que o sistema só entrega ao app empacotado (o esquema é declarado no `Info.plist` dele). Para testá-los, gere com `npm run dist:mac` e rode o app de `dist/`.
+
+### Gerando o instalador do Windows no macOS
+
+`npm run dist:win` funciona em um Mac Intel, ou em Apple Silicon com o Rosetta instalado. Sem o Rosetta ele falha com `spawn Unknown system error -86`, porque o compilador `makensis` que o electron-builder baixa é um binário Intel. Use o compilador nativo do Homebrew, mantendo os arquivos de dados do NSIS do próprio electron-builder:
+
+```bash
+brew install makensis
+```
+
+```bash
+cp -R ~/Library/Caches/electron-builder/nsis-3.0.4.1/nsis-3.0.4.1-* /tmp/nsis
+```
+
+```bash
+printf '#!/bin/sh\nexec /opt/homebrew/bin/makensis "$@"\n' > /tmp/nsis/mac/makensis
+```
+
+```bash
+ELECTRON_BUILDER_NSIS_DIR=/tmp/nsis npm run dist:win
+```
+
+Se a pasta de cache ainda não existir, rode `npm run dist:win` uma vez antes para o electron-builder baixá-la. Mantenha as pastas `Include` e `Plugins` copiadas: apontar o `NSISDIR` para os arquivos do Homebrew falha por uma string de idioma ausente que o electron-builder trata como erro.
 
 ### Adicionando um idioma
 
