@@ -1,22 +1,52 @@
 <div align="center">
 
+<img src="docs/images/logo.svg" alt="Claude MultiSpace logo" width="112" />
+
 # Claude MultiSpace
 
-**Use all your Claude accounts at the same time, side by side, without logging out.**
+### Run multiple Claude accounts at the same time, side by side, without ever logging out.
 
-Isolated Claude Desktop and Claude Code CLI instances, one per account, on macOS and Windows.
+A free, open-source profile manager for <b>Claude Desktop</b> and <b>Claude Code CLI</b>: one isolated instance per account, all open at once, on macOS and Windows.
 
 **English** · [Português (Brasil)](README.pt-BR.md) · [Español](README.es.md)
 
+[![GitHub stars](https://img.shields.io/github/stars/renatoasterio/claude-multi-space?style=flat&label=stars&color=f5c518&logo=github)](https://github.com/renatoasterio/claude-multi-space/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/renatoasterio/claude-multi-space?style=flat&label=issues&color=6a9bcc)](https://github.com/renatoasterio/claude-multi-space/issues)
+[![Last commit](https://img.shields.io/github/last-commit/renatoasterio/claude-multi-space?style=flat&label=last%20commit&color=7fb069)](https://github.com/renatoasterio/claude-multi-space/commits/main)
 [![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-c96442)](LICENSE.md)
-![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-1f1e1d)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-1f1e1d?logo=apple&logoColor=white)
 ![Languages](https://img.shields.io/badge/UI-English%20%7C%20Portugu%C3%AAs%20%7C%20Espa%C3%B1ol-6a9bcc)
-![Electron](https://img.shields.io/badge/Electron-45-47848f)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Electron](https://img.shields.io/badge/Electron-45-47848f?logo=electron&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+
+<br />
+
+<a href="https://github.com/renatoasterio/claude-multi-space/releases/latest"><img src="https://img.shields.io/badge/Download%20for%20macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download for macOS" height="40" /></a>&nbsp;&nbsp;
+<a href="https://github.com/renatoasterio/claude-multi-space/releases/latest"><img src="https://img.shields.io/badge/%E2%8A%9E%20Download%20for%20Windows-0078D4?style=for-the-badge&logoColor=white" alt="Download for Windows" height="40" /></a>&nbsp;&nbsp;
+<a href="#installation"><img src="https://img.shields.io/badge/%3C%2F%3E%20Run%20from%20source-c96442?style=for-the-badge&logoColor=white" alt="Run from source" height="40" /></a>
+
+<br /><br />
 
 <img src="docs/images/en/profiles.png" alt="Claude MultiSpace main screen with three profiles: Client, Personal and Work" width="820" />
 
 </div>
+
+<br />
+
+<table align="center">
+<tr><td align="center" width="48">🔀</td><td><b>Personal, work and client accounts</b></td><td>each in its own Claude window, running at the same time.</td></tr>
+<tr><td align="center" width="48">🔐</td><td><b>Sign in once per profile</b></td><td>no more <code>/logout</code>, <code>/login</code> and lost sessions.</td></tr>
+<tr><td align="center" width="48">🧩</td><td><b>Separate MCP servers, settings and history</b></td><td>per account, for Desktop and CLI alike.</td></tr>
+<tr><td align="center" width="48">🛡️</td><td><b>Zero credential access and zero network</b></td><td>you sign in inside Claude itself. Nothing leaves your machine.</td></tr>
+</table>
+
+<br />
+
+> ### ⚡ 60-second start
+>
+> 1. Download the installer for your system (or run from source).
+> 2. Click **New profile** and give it a name and a color.
+> 3. Click **Open Desktop** and sign in. Done: that account is now one click away, forever.
 
 ---
 
@@ -36,6 +66,7 @@ Isolated Claude Desktop and Claude Code CLI instances, one per account, on macOS
 - [Security and privacy](#security-and-privacy)
 - [For developers](#for-developers)
 - [License](#license)
+- [Spread the word](#spread-the-word)
 - [Author and credits](#author-and-credits)
 
 ---
@@ -455,6 +486,22 @@ This project is **free and source-available for personal, non-commercial use**, 
 Every copy, fork or derivative work must keep the [LICENSE.md](LICENSE.md) file, including the `Required Notice` lines crediting **Renato Asterio**.
 
 For commercial use, contact the author.
+
+## Spread the word
+
+<div align="center">
+
+If Claude MultiSpace saves you time, a ⭐ on the repository is the best way to help other people with the same problem find it.
+
+[![Star this repo](https://img.shields.io/badge/%E2%AD%90%20Star%20this%20repo-f5c518?style=for-the-badge&logoColor=black)](https://github.com/renatoasterio/claude-multi-space)
+[![Share on X](https://img.shields.io/badge/Share%20on%20X-000000?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/intent/tweet?text=Run%20several%20Claude%20accounts%20at%20once%2C%20side%20by%20side%2C%20with%20Claude%20MultiSpace%20%E2%80%94%20free%20for%20macOS%20and%20Windows&url=https://github.com/renatoasterio/claude-multi-space)
+[![Share on LinkedIn](https://img.shields.io/badge/Share%20on%20LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/renatoasterio/claude-multi-space)
+
+Found a bug or have an idea? [Open an issue](https://github.com/renatoasterio/claude-multi-space/issues). Pull requests are welcome, see [Contributing](#contributing).
+
+<sub>**Related searches:** multiple Claude accounts · Claude Desktop two accounts · switch Claude accounts without logging out · Claude Code multiple accounts · <code>CLAUDE_CONFIG_DIR</code> profiles · Claude account manager · Claude multi-profile · Swivel alternative for macOS and Windows</sub>
+
+</div>
 
 ## Author and credits
 

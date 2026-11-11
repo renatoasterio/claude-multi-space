@@ -1,22 +1,52 @@
 <div align="center">
 
+<img src="docs/images/logo.svg" alt="Claude MultiSpace logo" width="112" />
+
 # Claude MultiSpace
 
-**Usa todas tus cuentas de Claude al mismo tiempo, lado a lado, sin cerrar sesión.**
+### Usa varias cuentas de Claude al mismo tiempo, lado a lado, sin volver a cerrar sesión.
 
-Instancias aisladas de Claude Desktop y Claude Code CLI, una por cuenta, en macOS y Windows.
+Gestor de perfiles gratuito y de código abierto para <b>Claude Desktop</b> y <b>Claude Code CLI</b>: una instancia aislada por cuenta, todas abiertas a la vez, en macOS y Windows.
 
 [English](README.md) · [Português (Brasil)](README.pt-BR.md) · **Español**
 
+[![GitHub stars](https://img.shields.io/github/stars/renatoasterio/claude-multi-space?style=flat&label=estrellas&color=f5c518&logo=github)](https://github.com/renatoasterio/claude-multi-space/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/renatoasterio/claude-multi-space?style=flat&label=issues&color=6a9bcc)](https://github.com/renatoasterio/claude-multi-space/issues)
+[![Last commit](https://img.shields.io/github/last-commit/renatoasterio/claude-multi-space?style=flat&label=%C3%BAltimo%20commit&color=7fb069)](https://github.com/renatoasterio/claude-multi-space/commits/main)
 [![Licencia: PolyForm Noncommercial](https://img.shields.io/badge/licencia-PolyForm%20Noncommercial%201.0.0-c96442)](LICENSE.md)
-![Plataformas](https://img.shields.io/badge/plataformas-macOS%20%7C%20Windows-1f1e1d)
+![Plataformas](https://img.shields.io/badge/plataformas-macOS%20%7C%20Windows-1f1e1d?logo=apple&logoColor=white)
 ![Idiomas](https://img.shields.io/badge/interfaz-English%20%7C%20Portugu%C3%AAs%20%7C%20Espa%C3%B1ol-6a9bcc)
-![Electron](https://img.shields.io/badge/Electron-45-47848f)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Electron](https://img.shields.io/badge/Electron-45-47848f?logo=electron&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+
+<br />
+
+<a href="https://github.com/renatoasterio/claude-multi-space/releases/latest"><img src="https://img.shields.io/badge/Descargar%20para%20macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar para macOS" height="40" /></a>&nbsp;&nbsp;
+<a href="https://github.com/renatoasterio/claude-multi-space/releases/latest"><img src="https://img.shields.io/badge/%E2%8A%9E%20Descargar%20para%20Windows-0078D4?style=for-the-badge&logoColor=white" alt="Descargar para Windows" height="40" /></a>&nbsp;&nbsp;
+<a href="#instalación"><img src="https://img.shields.io/badge/%3C%2F%3E%20Ejecutar%20desde%20el%20c%C3%B3digo-c96442?style=for-the-badge&logoColor=white" alt="Ejecutar desde el c%C3%B3digo" height="40" /></a>
+
+<br /><br />
 
 <img src="docs/images/es/profiles.png" alt="Pantalla principal de Claude MultiSpace con tres perfiles: Cliente, Personal y Trabajo" width="820" />
 
 </div>
+
+<br />
+
+<table align="center">
+<tr><td align="center" width="48">🔀</td><td><b>Cuenta personal, del trabajo y de clientes</b></td><td>cada una en su propia ventana de Claude, todas funcionando al mismo tiempo.</td></tr>
+<tr><td align="center" width="48">🔐</td><td><b>Inicia sesión una sola vez por perfil</b></td><td>se acabaron <code>/logout</code>, <code>/login</code> y las sesiones perdidas.</td></tr>
+<tr><td align="center" width="48">🧩</td><td><b>Servidores MCP, ajustes e historial separados</b></td><td>por cuenta, tanto en Desktop como en la CLI.</td></tr>
+<tr><td align="center" width="48">🛡️</td><td><b>Cero acceso a credenciales y cero red</b></td><td>inicias sesión dentro del propio Claude. Nada sale de tu equipo.</td></tr>
+</table>
+
+<br />
+
+> ### ⚡ Empieza en 60 segundos
+>
+> 1. Descarga el instalador para tu sistema (o ejecútalo desde el código).
+> 2. Haz clic en **Nuevo perfil** y ponle un nombre y un color.
+> 3. Haz clic en **Abrir Desktop** e inicia sesión. Listo: esa cuenta queda a un clic, para siempre.
 
 ---
 
@@ -36,6 +66,7 @@ Instancias aisladas de Claude Desktop y Claude Code CLI, una por cuenta, en macO
 - [Seguridad y privacidad](#seguridad-y-privacidad)
 - [Para desarrolladores](#para-desarrolladores)
 - [Licencia](#licencia)
+- [Difunde el proyecto](#difunde-el-proyecto)
 - [Autor y créditos](#autor-y-créditos)
 
 ---
@@ -455,6 +486,22 @@ Este proyecto es **gratuito y de código fuente disponible para uso personal y n
 Toda copia, fork u obra derivada debe conservar el archivo [LICENSE.md](LICENSE.md), incluidas las líneas `Required Notice` que dan crédito a **Renato Asterio**.
 
 Para uso comercial, contacta con el autor.
+
+## Difunde el proyecto
+
+<div align="center">
+
+Si Claude MultiSpace te ahorra tiempo, una ⭐ en el repositorio es la mejor forma de ayudar a que otras personas con el mismo problema lo encuentren.
+
+[![Dale una estrella](https://img.shields.io/badge/%E2%AD%90%20Dale%20una%20estrella-f5c518?style=for-the-badge&logoColor=black)](https://github.com/renatoasterio/claude-multi-space)
+[![Compartir en X](https://img.shields.io/badge/Compartir%20en%20X-000000?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/intent/tweet?text=Usa%20varias%20cuentas%20de%20Claude%20al%20mismo%20tiempo%2C%20lado%20a%20lado%2C%20con%20Claude%20MultiSpace%20%E2%80%94%20gratis%20para%20macOS%20y%20Windows&url=https://github.com/renatoasterio/claude-multi-space)
+[![Compartir en LinkedIn](https://img.shields.io/badge/Compartir%20en%20LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/renatoasterio/claude-multi-space)
+
+¿Encontraste un error o tienes una idea? [Abre un issue](https://github.com/renatoasterio/claude-multi-space/issues). Los pull requests son bienvenidos, consulta [Contribuir](#contribuir).
+
+<sub>**Búsquedas relacionadas:** varias cuentas de Claude · dos cuentas en Claude Desktop · cambiar de cuenta en Claude sin cerrar sesión · Claude Code con varias cuentas · perfiles con <code>CLAUDE_CONFIG_DIR</code> · gestor de cuentas de Claude · multiperfil Claude · alternativa a Swivel para macOS y Windows</sub>
+
+</div>
 
 ## Autor y créditos
 
